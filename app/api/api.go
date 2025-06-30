@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/go-chi/chi/v5"
+	chi "github.com/go-chi/chi/v5"
 
 	app "github.com/joaopedropio/musiquera/app"
 )

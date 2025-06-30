@@ -2,7 +2,7 @@ package controller
 
 import (
 	"fmt"
-	"github.com/go-chi/chi/v5"
+	chi "github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"net/http"
 
@@ -32,7 +32,7 @@ func (c *AlbumController) Get(w http.ResponseWriter, r *http.Request) {
 	}
 	album, err := c.application.Repo().GetAlbum(id)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("unable to get album by id: id: %s, %w", albumID, err), 500)
+		http.Error(w, fmt.Sprintf("unable to get album by id: id: %s, %s", albumID, err.Error()), 500)
 	}
 	w.Write([]byte(fmt.Sprintf("name: %s, releaseDate: %s", album.Name(), album.ReleaseDate().String())))
 }
