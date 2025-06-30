@@ -22,7 +22,7 @@ type AlbumController struct {
 func (c *AlbumController) Get(w http.ResponseWriter, r *http.Request) {
 	albumID := chi.URLParam(r, "albumID")
 	if albumID == "" {
-		http.Error(w, fmt.Sprintf("albumID must not be empty"), 400)
+		http.Error(w, "albumID must not be empty", 400)
 		return
 	}
 	id, err := uuid.Parse(albumID)
@@ -34,5 +34,8 @@ func (c *AlbumController) Get(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, fmt.Sprintf("unable to get album by id: id: %s, %s", albumID, err.Error()), 500)
 	}
-	w.Write([]byte(fmt.Sprintf("name: %s, releaseDate: %s", album.Name(), album.ReleaseDate().String())))
+	_, err = fmt.Fprintf(w, "name: %s, releaseDate: %s", album.Name(), album.ReleaseDate().String())
+	if err != nil {
+		http.Error(w, fmt.Sprintf("unable to write to response: %s", err.Error()), 500)
+	}
 }

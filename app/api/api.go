@@ -6,10 +6,9 @@ import (
 	app "github.com/joaopedropio/musiquera/app"
 )
 
-func ConfigureAPI(r *chi.Mux, a app.Application) error {
+func ConfigureAPI(r *chi.Mux, a app.Application) {
 	c := SetupControllers(a)
 	configureHandlers(r, c)
-	return nil
 }
 
 func configureHandlers(r *chi.Mux, c Controller) {

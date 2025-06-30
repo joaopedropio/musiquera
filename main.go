@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 
@@ -11,13 +12,19 @@ import (
 )
 
 func main() {
+	if err := runApi(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+func runApi() error {
 	r := chi.NewRouter()
 	a, err := app.NewApplication()
 	api.ConfigureAPI(r, a)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("unable to configure api")
 	}
 	port := ":8080"
 	fmt.Print("musiquera running on port ", port)
-	http.ListenAndServe(port, r)
+	return http.ListenAndServe(port, r)
 }
