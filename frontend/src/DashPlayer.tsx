@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect} from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import * as dashjs from 'dashjs'
 
 interface DashPlayerProps {
@@ -6,7 +6,7 @@ interface DashPlayerProps {
 	autoplay?: boolean;
 }
 
-const DashPlayer: React.FC<DashPlayerProps> = ({ src, autoplay}) => {
+const DashPlayer: React.FC<DashPlayerProps> = ({ src, autoplay }) => {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [volume, setVolume] = useState(1); // Volume range: 0 to 1
@@ -14,14 +14,14 @@ const DashPlayer: React.FC<DashPlayerProps> = ({ src, autoplay}) => {
 	const [duration, setDuration] = useState(0);
 
 	const handlePlay = () => {
-		if(audioRef.current){
+		if (audioRef.current) {
 			audioRef.current.play();
 			setIsPlaying(true);
 		}
 	};
 
 	const handlePause = () => {
-		if(audioRef.current){
+		if (audioRef.current) {
 			audioRef.current.pause();
 			setIsPlaying(false);
 		}
@@ -29,7 +29,7 @@ const DashPlayer: React.FC<DashPlayerProps> = ({ src, autoplay}) => {
 
 	const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const newVolume = parseFloat(e.target.value);
-		if (audioRef.current){
+		if (audioRef.current) {
 			audioRef.current.volume = newVolume;
 			setVolume(newVolume);
 		}
@@ -64,7 +64,7 @@ const DashPlayer: React.FC<DashPlayerProps> = ({ src, autoplay}) => {
 
 	return (
 		<div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-			<audio ref={audioRef} src="your-audio-file.mp3" preload="auto" />
+			<audio ref={audioRef} preload="auto" />
 
 			<div style={{ marginBottom: '10px' }}>
 				<button onClick={handlePlay} disabled={isPlaying}>Play</button>
@@ -105,7 +105,7 @@ const DashPlayer: React.FC<DashPlayerProps> = ({ src, autoplay}) => {
 	);
 };
 
-function formatTime(time) {
+function formatTime(time: number) {
 	const minutes = Math.floor(time / 60);
 	const seconds = Math.floor(time % 60).toString().padStart(2, '0');
 	return `${minutes}:${seconds}`;
