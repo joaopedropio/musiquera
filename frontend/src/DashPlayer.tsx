@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import * as dashjs from 'dashjs'
+import { MediaPlayer } from 'dashjs'
 
 interface DashPlayerProps {
 	src: string;
@@ -46,7 +46,7 @@ const DashPlayer: React.FC<DashPlayerProps> = ({ src, autoplay }) => {
 	useEffect(() => {
 		if (audioRef.current && src) {
 			const audio = audioRef.current;
-			const player = dashjs.MediaPlayer().create();
+			const player = MediaPlayer().create();
 			player.initialize(audioRef.current, src, autoplay);
 			const updateTime = () => setCurrentTime(audio.currentTime);
 			const setAudioDuration = () => setDuration(audio.duration);
