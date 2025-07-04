@@ -6,12 +6,18 @@ import (
 )
 
 type Controller struct {
-	Album *controller.AlbumController
+	Album    *controller.AlbumController
+	PingPong *controller.PingPongController
+	StaticFiles *controller.StaticController
 }
 
 func SetupControllers(a app.Application) Controller {
 	albumController := controller.NewAlbumController(a)
+	pingpingController := controller.NewPingPong()
+	staticFilesController := controller.NewStaticController(a.Environment().WebStaticFilesDir)
 	return Controller{
-		Album: albumController,
+		Album:    albumController,
+		PingPong: pingpingController,
+		StaticFiles: staticFilesController,
 	}
 }

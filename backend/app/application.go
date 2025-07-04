@@ -10,10 +10,16 @@ import (
 
 type Application interface {
 	Repo() domainrepo.Repo
+	Environment() Environment
 }
 
 type application struct {
 	repo domainrepo.Repo
+	env Environment
+}
+
+func (a *application) Environment() Environment {
+	return a.env
 }
 
 func (a *application) Repo() domainrepo.Repo {
@@ -22,8 +28,10 @@ func (a *application) Repo() domainrepo.Repo {
 
 func NewApplication() (Application, error) {
 	repo := infra.NewRepo()
+	env := GetEnvironmentVariables()
 	a := &application{
 		repo,
+		env,
 	}
 	if err := a.feed(); err != nil {
 		return nil, fmt.Errorf("unable to feed: %w", err)
