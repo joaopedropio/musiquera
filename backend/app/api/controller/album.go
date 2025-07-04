@@ -1,10 +1,12 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
+
 	chi "github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
-	"net/http"
 
 	"github.com/joaopedropio/musiquera/app"
 )
@@ -17,6 +19,46 @@ func NewAlbumController(a app.Application) *AlbumController {
 
 type AlbumController struct {
 	application app.Application
+}
+
+type Song struct {
+	Name string `json:name`
+	File string `json:file`
+
+}
+
+type AlbumResponse struct {
+	Name string `json:name`
+	Artist string `json:artist`
+	ReleaseDate string `json:releaseDate`
+	Songs []*Song
+}
+
+func (c *AlbumController) GetMostRecent(w http.ResponseWriter, r *http.Request) {
+	name, releaseDate, artist, songs, err := c.application.Repo().GetMostRecentAlbum()
+	var songss []*Song
+	for _, song := range songs {
+		s:= &Song{
+			Name: song.Name(),
+			File: song.File(),
+		}
+		songss = append(songss, s)
+	}
+	album := AlbumResponse{
+		Name: name,
+		Artist: artist.Name(),
+		ReleaseDate: releaseDate.String(),
+		Songs: songss,
+	}
+	//response, err := json.Marshal(a)
+	err = json.NewEncoder(w).Encode(album)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("unable to marshal album response: %s", err.Error()), 500)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	// Write JSON response
 }
 
 func (c *AlbumController) Get(w http.ResponseWriter, r *http.Request) {
