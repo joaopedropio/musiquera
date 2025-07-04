@@ -33,7 +33,7 @@ function App() {
 			</p>
 			<video id="videoPlayer" controls></video>
 	  */}
-			<DashPlayer src='https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd' />
+			<DashPlayer src='./media/video/manifest.mpd' />
 		</>
 	)
 }

@@ -2,21 +2,22 @@
 FROM --platform=$BUILDPLATFORM golang:1.24-alpine AS builder
 
 WORKDIR /app
-
-COPY go.mod ./
-COPY go.sum ./
+COPY ./backend/go.mod ./backend/go.sum ./
 RUN go mod download
+COPY ./backend .
 
-COPY . .
-
-RUN GOOS=linux GOARCH=arm64 go build -o myapp
+RUN GOOS=linux GOARCH=arm64 go build -o /app/server .
 
 # Stage 2: Runtime
 FROM --platform=linux/arm64 alpine:latest
 
-WORKDIR /root/
+WORKDIR /app
 
-COPY --from=builder /app/myapp .
+COPY --from=builder /app/server ./server
 
-ENTRYPOINT ["./myapp"]
+COPY ./frontend/dist /static
+
+EXPOSE 8080
+
+ENTRYPOINT ["./server"]
 
