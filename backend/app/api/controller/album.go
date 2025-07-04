@@ -22,43 +22,43 @@ type AlbumController struct {
 }
 
 type Song struct {
-	Name string `json:name`
-	File string `json:file`
-
+	Name string `json:"name"`
+	File string `json:"file"`
 }
 
 type AlbumResponse struct {
-	Name string `json:name`
-	Artist string `json:artist`
-	ReleaseDate string `json:releaseDate`
-	Songs []*Song
+	Name        string  `json:"name"`
+	Artist      string  `json:"artist"`
+	ReleaseDate string  `json:"releaseDate"`
+	Songs       []*Song `json:"songs"`
 }
 
 func (c *AlbumController) GetMostRecent(w http.ResponseWriter, r *http.Request) {
 	name, releaseDate, artist, songs, err := c.application.Repo().GetMostRecentAlbum()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("unable to get most recent album: %s", err.Error()), 500)
+	}
 	var songss []*Song
 	for _, song := range songs {
-		s:= &Song{
+		s := &Song{
 			Name: song.Name(),
 			File: song.File(),
 		}
 		songss = append(songss, s)
 	}
 	album := AlbumResponse{
-		Name: name,
-		Artist: artist.Name(),
+		Name:        name,
+		Artist:      artist.Name(),
 		ReleaseDate: releaseDate.String(),
-		Songs: songss,
-	}
-	//response, err := json.Marshal(a)
-	err = json.NewEncoder(w).Encode(album)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("unable to marshal album response: %s", err.Error()), 500)
+		Songs:       songss,
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	// Write JSON response
+	err = json.NewEncoder(w).Encode(album)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("unable to marshal album response: %s", err.Error()), 500)
+	}
 }
 
 func (c *AlbumController) Get(w http.ResponseWriter, r *http.Request) {
