@@ -3,13 +3,19 @@ import './App.css'
 import './DashPlayer'
 import DashPlayer from './DashPlayer'
 import Playlist from './Playlist'
+import ArtistComponent from './Artist'
 
 function App() {
 	const [currentSongUrl, setCurrentSongUrl] = useState<string | null>(null);
 	return (
 		<>
-			<Playlist setCurrentSongUrl={setCurrentSongUrl}/>
-			{ currentSongUrl && <DashPlayer src={currentSongUrl} autoplay />}
+			<div>
+				<ArtistComponent />
+				<Playlist setCurrentSongUrl={setCurrentSongUrl} />
+			</div>
+			<div>
+				{currentSongUrl && <DashPlayer src={currentSongUrl} autoplay />}
+			</div>
 		</>
 	)
 }

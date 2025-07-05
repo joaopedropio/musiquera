@@ -11,6 +11,7 @@ func ConfigureAPI(r *chi.Mux, a app.Application) {
 }
 
 func configureHandlers(r *chi.Mux, c Controller) {
+	r.Get("/api/artist/", c.Artist.GetAllArtists)
 	r.Get("/api/album/{albumID}", c.Album.Get)
 	r.Get("/api/album/mostRecent", c.Album.GetMostRecent)
 	r.Get("/api/album/byArtist/{artistName}", c.Album.GetAlbumsByArtist)

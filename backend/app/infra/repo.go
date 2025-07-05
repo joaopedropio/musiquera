@@ -2,9 +2,8 @@ package infra
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/google/uuid"
+	"time"
 
 	domain "github.com/joaopedropio/musiquera/app/domain/entity"
 	repodomain "github.com/joaopedropio/musiquera/app/domain/repo"
@@ -19,7 +18,9 @@ func (r *repo) GetArtists() ([]domain.Artist, error) {
 	for _, album := range r.albums {
 		artists = append(artists, album.Artist())
 	}
-	return artists, nil
+	return UniqueBy(artists, func(a domain.Artist) string {
+		return a.Name()
+	}), nil
 }
 
 func (r *repo) GetAlbumsByArtist(artistName string) ([]domain.FullAlbum, error) {
@@ -41,7 +42,7 @@ func (r *repo) AddAlbum(name string, release domain.Date, artist domain.Artist, 
 		artist,
 		songs,
 		time.Now(),
-		)
+	)
 	r.albums = append(r.albums, a)
 	return id, nil
 }
@@ -83,4 +84,30 @@ func (r *repo) GetMostRecentAlbum() (domain.FullAlbum, error) {
 
 func NewRepo() repodomain.Repo {
 	return &repo{}
+}
+
+func Unique[T comparable](input []T) []T {
+	seen := make(map[T]struct{})
+	result := input[:0]
+	for _, v := range input {
+		if _, exists := seen[v]; !exists {
+			seen[v] = struct{}{}
+			result = append(result, v)
+		}
+	}
+	return result
+}
+
+func UniqueBy[T any, K comparable](input []T, keySelector func(T) K) []T {
+	seen := make(map[K]struct{})
+	result := input[:0]
+
+	for _, v := range input {
+		key := keySelector(v)
+		if _, exists := seen[key]; !exists {
+			seen[key] = struct{}{}
+			result = append(result, v)
+		}
+	}
+	return result
 }
