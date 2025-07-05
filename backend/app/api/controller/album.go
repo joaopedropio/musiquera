@@ -33,13 +33,50 @@ type AlbumResponse struct {
 	Songs       []*Song `json:"songs"`
 }
 
+func (c *AlbumController) GetAlbumsByArtist(w http.ResponseWriter, r *http.Request) {
+	artistName := chi.URLParam(r, "artistName")
+	if artistName == "" {
+		http.Error(w, "artistName cannot be empty", 500)
+	}
+	fullAlbums, err := c.application.Repo().GetAlbumsByArtist(artistName)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("unable to get most recent album: %s", err.Error()), 500)
+	}
+	var albumResponses []AlbumResponse
+	for _, album := range fullAlbums {
+		var songs []*Song
+		for _, song := range album.Songs() {
+			s := &Song{
+				Name: song.Name(),
+				File: song.File(),
+			}
+			songs = append(songs, s)
+		}
+		albumResponse := AlbumResponse{
+			Name:        album.Name(),
+			Artist:      album.Artist().Name(),
+			ReleaseDate: album.ReleaseDate().String(),
+			Songs:       songs,
+		}
+		albumResponses = append(albumResponses, albumResponse)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	err = json.NewEncoder(w).Encode(albumResponses)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("unable to marshal album response: %s", err.Error()), 500)
+	}
+
+}
+
 func (c *AlbumController) GetMostRecent(w http.ResponseWriter, r *http.Request) {
-	name, releaseDate, artist, songs, err := c.application.Repo().GetMostRecentAlbum()
+	fullAlbum, err := c.application.Repo().GetMostRecentAlbum()
 	if err != nil {
 		http.Error(w, fmt.Sprintf("unable to get most recent album: %s", err.Error()), 500)
 	}
 	var songss []*Song
-	for _, song := range songs {
+	for _, song := range fullAlbum.Songs() {
 		s := &Song{
 			Name: song.Name(),
 			File: song.File(),
@@ -47,9 +84,9 @@ func (c *AlbumController) GetMostRecent(w http.ResponseWriter, r *http.Request) 
 		songss = append(songss, s)
 	}
 	album := AlbumResponse{
-		Name:        name,
-		Artist:      artist.Name(),
-		ReleaseDate: releaseDate.String(),
+		Name:        fullAlbum.Name(),
+		Artist:      fullAlbum.Artist().Name(),
+		ReleaseDate: fullAlbum.ReleaseDate().String(),
 		Songs:       songss,
 	}
 	w.Header().Set("Content-Type", "application/json")

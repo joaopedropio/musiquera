@@ -6,8 +6,10 @@ import (
 )
 
 type Repo interface {
+	GetAlbumsByArtist(artistName string) ([]entity.FullAlbum, error)
+	GetArtists() ([]entity.Artist, error)
 	AddAlbum(name string, release entity.Date, artist entity.Artist, songs []entity.Song) (uuid.UUID, error)
 	GetAlbum(id uuid.UUID) (entity.Album, error)
-	GetFullAlbum(id uuid.UUID) (string, entity.Date, entity.Artist, []entity.Song, error)
-	GetMostRecentAlbum() (string, entity.Date, entity.Artist, []entity.Song, error)
+	GetFullAlbum(id uuid.UUID) (entity.FullAlbum, error)
+	GetMostRecentAlbum() (entity.FullAlbum, error)
 }
