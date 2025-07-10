@@ -10,9 +10,21 @@ interface DashPlayerProps {
 const DashPlayer: React.FC<DashPlayerProps> = ({ src, autoplay }) => {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [isPlaying, setIsPlaying] = useState(false);
-	//const [volume, setVolume] = useState(1); // Volume range: 0 to 1
+	const [volume, setVolume] = useState(1); // Volume range: 0 to 1
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState(0);
+
+	const onPlay = () => {
+		if (audioRef.current) {
+			setIsPlaying(true);
+		}
+	}
+
+	const onPause = () => {
+		if (audioRef.current) {
+			setIsPlaying(false);
+		}
+	}
 
 	const handlePlay = () => {
 		if (audioRef.current) {
@@ -28,13 +40,13 @@ const DashPlayer: React.FC<DashPlayerProps> = ({ src, autoplay }) => {
 		}
 	};
 
-	//const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-	//	const newVolume = parseFloat(e.target.value);
-	//	if (audioRef.current) {
-	//		audioRef.current.volume = newVolume;
-	//		setVolume(newVolume);
-	//	}
-	//};
+	const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const newVolume = parseFloat(e.target.value);
+		if (audioRef.current) {
+			audioRef.current.volume = newVolume;
+			setVolume(newVolume);
+		}
+	};
 
 	const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const newTime = parseFloat(e.target.value);
@@ -55,9 +67,14 @@ const DashPlayer: React.FC<DashPlayerProps> = ({ src, autoplay }) => {
 			audio.addEventListener('timeupdate', updateTime);
 			audio.addEventListener('loadedmetadata', setAudioDuration);
 
+			audio.addEventListener('play', onPlay);
+			audio.addEventListener('pause', onPause);
+
 			return () => {
 				audio.removeEventListener('timeupdate', updateTime);
 				audio.removeEventListener('loadedmetadata', setAudioDuration);
+				audio.removeEventListener('play', onPlay);
+				audio.removeEventListener('pause', onPause);
 				player.reset();
 			};
 		}
@@ -67,23 +84,21 @@ const DashPlayer: React.FC<DashPlayerProps> = ({ src, autoplay }) => {
 		<div className='dashPlayer'>
 			<audio ref={audioRef} preload="auto" />
 
-<div className="controls">
-	{!isPlaying ? (
-		<button onClick={handlePlay} className="icon-button" title="Play">
-			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-				<path d="M8 5v14l11-7z" />
-			</svg>
-		</button>
-	) : (
-		<button onClick={handlePause} className="icon-button" title="Pause">
-			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-				<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-			</svg>
-		</button>
-	)}
-</div>
-
-{/*
+			<div className="controls">
+				{!isPlaying ? (
+					<button onClick={handlePlay} className="icon-button" title="Play">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+							<path d="M8 5v14l11-7z" />
+						</svg>
+					</button>
+				) : (
+					<button onClick={handlePause} className="icon-button" title="Pause">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+							<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+						</svg>
+					</button>
+				)}
+			</div>
 			<div>
 				<label>
 					Volume:
@@ -97,7 +112,6 @@ const DashPlayer: React.FC<DashPlayerProps> = ({ src, autoplay }) => {
 					/>
 				</label>
 			</div>
-			*/}
 			<div>
 				<label>
 					Progress:
