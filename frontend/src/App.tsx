@@ -45,12 +45,15 @@ function App() {
 
 
 	return (
-		<div className='container'>
-			<div className='content'>
-				<div>
+		<div className='app-container'>
+			<nav className='navbar'>
+				<h1>Navbar</h1>
+			</nav>
+			<main className='content'>
+				<div className='list-container'>
 					<ArtistComponent artists={artists} setCurrentArtist={setCurrentArtist} />
 				</div>
-				<div>
+				<div className='list-container'>
 					{albums.length > 0 ? (
 						albums.map((album) => (
 
@@ -60,14 +63,14 @@ function App() {
 						<strong>Pick a artist</strong>
 					)}
 				</div>
-			</div>
-			<div className='footer'>
-				{ currentSongUrl ? (
+			</main>
+			<footer className='footer'>
+				{currentSongUrl ? (
 					<DashPlayer src={currentSongUrl} autoplay />
-				):(
+				) : (
 					<DashPlayer src='' />
 				)}
-			</div>
+			</footer>
 		</div>
 	)
 }
