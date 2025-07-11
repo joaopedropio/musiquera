@@ -15,6 +15,29 @@ function App() {
 
 	const client = new Client()
 
+	const onSongEnd = () => {
+		if (currentSongUrl == null) {
+			return
+		}
+		for (let i = 0; i < albums.length; i++) {
+			const album = albums[i];
+			for (let j = 0; j < album.songs.length; j++) {
+				const song = album.songs[j];
+				if (song.file == currentSongUrl) {
+					const order = j + 1
+					if (order >= album.songs.length) {
+						setCurrentSongUrl(album.songs[0].file)
+						return
+					}
+					setCurrentSongUrl(album.songs[order].file)
+					return
+				}
+
+			}
+		}
+		return
+	}
+
 	useEffect(() => {
 		const fetchAlbums = async () => {
 			try {
@@ -57,7 +80,7 @@ function App() {
 					{albums.length > 0 ? (
 						albums.map((album) => (
 
-							<Playlist album={album} setCurrentSongUrl={setCurrentSongUrl} />
+							<Playlist album={album} setCurrentSongUrl={setCurrentSongUrl} highLightedSong={currentSongUrl} />
 						))
 					) : (
 						<strong>Pick a artist</strong>
@@ -66,9 +89,9 @@ function App() {
 			</main>
 			<footer className='footer'>
 				{currentSongUrl ? (
-					<DashPlayer src={currentSongUrl} autoplay />
+					<DashPlayer src={currentSongUrl} onSongEnd={onSongEnd} autoplay />
 				) : (
-					<DashPlayer src='' />
+					<DashPlayer src='' onSongEnd={onSongEnd}/>
 				)}
 			</footer>
 		</div>

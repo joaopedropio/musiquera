@@ -4,10 +4,11 @@ import './DashPlayer.css'
 
 interface DashPlayerProps {
 	src: string;
+	onSongEnd: () => void;
 	autoplay?: boolean;
 }
 
-const DashPlayer: React.FC<DashPlayerProps> = ({ src, autoplay }) => {
+const DashPlayer: React.FC<DashPlayerProps> = ({ src, onSongEnd, autoplay }) => {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [volume, setVolume] = useState(1); // Volume range: 0 to 1
@@ -82,7 +83,7 @@ const DashPlayer: React.FC<DashPlayerProps> = ({ src, autoplay }) => {
 
 	return (
 		<div className='dashPlayer'>
-			<audio ref={audioRef} preload="auto" />
+			<audio ref={audioRef} preload="auto" onEnded={onSongEnd} />
 
 			<div className="controls">
 				{!isPlaying ? (

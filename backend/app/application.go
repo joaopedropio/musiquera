@@ -42,6 +42,54 @@ func NewApplication() (Application, error) {
 
 func (a *application) feed() error {
 
+	liquidLabVol12 := []domain.Song{
+		domain.NewSong("KREAM - Liquid Lab Intro", "", "/media/kream/liquid_lab_vol_12/KREAM___Liquid_Lab_Intro/manifest.mpd", time.Minute*5),
+		domain.NewSong("Dyzen - She Likes", "", "/media/kream/liquid_lab_vol_12/Dyzen___She_Likes/manifest.mpd", time.Minute*5),
+		domain.NewSong("RÜFÜS DU SOL - Inhale (SCRIPT Edit)", "", "/media/kream/liquid_lab_vol_12/R_F_S_DU_SOL___Inhale__SCRIPT_Edit_/manifest.mpd", time.Minute*5),
+		domain.NewSong("RÜFÜS DU SOL - Lately", "", "/media/kream/liquid_lab_vol_12/R_F_S_DU_SOL___Lately/manifest.mpd", time.Minute*5),
+		domain.NewSong("NORRA - This Love", "", "/media/kream/liquid_lab_vol_12/NORRA___This_Love/manifest.mpd", time.Minute*5),
+		domain.NewSong("RY X - Only", "", "/media/kream/liquid_lab_vol_12/RY_X___Only/manifest.mpd", time.Minute*5),
+		domain.NewSong("Simon Doty & DJ Pierre - Come Together", "", "/media/kream/liquid_lab_vol_12/Simon_Doty___DJ_Pierre___Come_Together/manifest.mpd", time.Minute*5),
+		domain.NewSong("Dom Dolla ft Daya - Dreamin’ (KREAM Remix)", "", "/media/kream/liquid_lab_vol_12/Dom_Dolla_ft_Daya___Dreamin___KREAM_Remix_/manifest.mpd", time.Minute*5),
+		domain.NewSong("KREAM & Volaris - ID (Set You Free)", "", "/media/kream/liquid_lab_vol_12/KREAM___Volaris___ID__Set_You_Free_/manifest.mpd", time.Minute*5),
+		domain.NewSong("Vintage Culture & Tom Breu ft Maverick Sabre - Weak (Acappella)", "", "/media/kream/liquid_lab_vol_12/Vintage_Culture___Tom_Breu_ft_Maverick_Sabre___Weak__Acappella_/manifest.mpd", time.Minute*5),
+		domain.NewSong("Cristoph & Harry Diamond - Hold Me Close", "", "/media/kream/liquid_lab_vol_12/Cristoph___Harry_Diamond___Hold_Me_Close/manifest.mpd", time.Minute*5),
+		domain.NewSong("Florence + The Machine - You've Got The Love (Acappella)", "", "/media/kream/liquid_lab_vol_12/Florence___The_Machine___You_ve_Got_The_Love__Acappella_/manifest.mpd", time.Minute*5),
+		domain.NewSong("Aaron Hibell ft Felsmann + Tiley - Levitation", "", "/media/kream/liquid_lab_vol_12/Aaron_Hibell_ft_Felsmann___Tiley___Levitation/manifest.mpd", time.Minute*5),
+		domain.NewSong("Elderbrook ft George FitzGerald - Glad I Found You (Acappella)", "", "/media/kream/liquid_lab_vol_12/Elderbrook_ft_George_FitzGerald___Glad_I_Found_You__Acappella_/manifest.mpd", time.Minute*5),
+		domain.NewSong("Morgin Madison & Adam Nazar vs Crimsen - Closer (Ryan Lucian Remix)", "", "/media/kream/liquid_lab_vol_12/Morgin_Madison___Adam_Nazar_vs_Crimsen___Closer__Ryan_Lucian_Remix_/manifest.mpd", time.Minute*5),
+		domain.NewSong("Prospa ft RAHH - This Rhythm (Acappella)", "", "/media/kream/liquid_lab_vol_12/Prospa_ft_RAHH___This_Rhythm__Acappella_/manifest.mpd", time.Minute*5),
+		domain.NewSong("Syence - The Distance", "", "/media/kream/liquid_lab_vol_12/Syence___The_Distance/manifest.mpd", time.Minute*5),
+		domain.NewSong("Eric Prydz - 2night", "", "/media/kream/liquid_lab_vol_12/Eric_Prydz___2night/manifest.mpd", time.Minute*5),
+		domain.NewSong("Emmit Fenn - The Chase (Acappella)", "", "/media/kream/liquid_lab_vol_12/Emmit_Fenn___The_Chase__Acappella_/manifest.mpd", time.Minute*5),
+		domain.NewSong("Adriatique & WhoMadeWho - Miracle (RÜFÜS DU SOL Remix)", "", "/media/kream/liquid_lab_vol_12/Adriatique___WhoMadeWho___Miracle__R_F_S_DU_SOL_Remix_/manifest.mpd", time.Minute*5),
+		domain.NewSong("KREAM & Ruback - Se Que Quiere", "", "/media/kream/liquid_lab_vol_12/KREAM___Ruback___Se_Que_Quiere/manifest.mpd", time.Minute*5),
+		domain.NewSong("Silar - The Tunnel vs Pa Salieu ft Obongjayar - Style & Fashion (Acappella)", "", "/media/kream/liquid_lab_vol_12/Silar___The_Tunnel_vs_Pa_Salieu_ft_Obongjayar___Style___Fashion__Acappella_/manifest.mpd", time.Minute*5),
+		domain.NewSong("Dan Sushi - Orbital", "", "/media/kream/liquid_lab_vol_12/Dan_Sushi___Orbital/manifest.mpd", time.Minute*5),
+		domain.NewSong("Son Of Son - Lost Control (Acappella)", "", "/media/kream/liquid_lab_vol_12/Son_Of_Son___Lost_Control__Acappella_/manifest.mpd", time.Minute*5),
+		domain.NewSong("Samm & Ajna - Move", "", "/media/kream/liquid_lab_vol_12/Samm___Ajna___Move/manifest.mpd", time.Minute*5),
+		domain.NewSong("PACS - Hyperdrive", "", "/media/kream/liquid_lab_vol_12/PACS___Hyperdrive/manifest.mpd", time.Minute*5),
+		domain.NewSong("Lil Yachty ft Future & Playboi Carti - Flex Up (Acappella)", "", "/media/kream/liquid_lab_vol_12/Lil_Yachty_ft_Future___Playboi_Carti___Flex_Up__Acappella_/manifest.mpd", time.Minute*5),
+		domain.NewSong("Goom Gum - Staccato", "", "/media/kream/liquid_lab_vol_12/Goom_Gum___Staccato/manifest.mpd", time.Minute*5),
+		domain.NewSong("Fideles ft Be No Rain - Night After Night (CamelPhat Remix)", "", "/media/kream/liquid_lab_vol_12/Fideles_ft_Be_No_Rain___Night_After_Night__CamelPhat_Remix_/manifest.mpd", time.Minute*5),
+		domain.NewSong("Anakim & Dark Heart vs Frýnn - Seconds Away", "", "/media/kream/liquid_lab_vol_12/Anakim___Dark_Heart_vs_Fr_nn___Seconds_Away/manifest.mpd", time.Minute*5),
+		domain.NewSong("Diplo & HUGEL ft Malou vs Yuna - Forever (Acappella)", "", "/media/kream/liquid_lab_vol_12/Diplo___HUGEL_ft_Malou_vs_Yuna___Forever__Acappella_/manifest.mpd", time.Minute*5),
+		domain.NewSong("Adriatique & Solique vs ALSO ASTIR - Changing Colors", "", "/media/kream/liquid_lab_vol_12/Adriatique___Solique_vs_ALSO_ASTIR___Changing_Colors/manifest.mpd", time.Minute*5),
+		domain.NewSong("Dyzen - Try", "", "/media/kream/liquid_lab_vol_12/Dyzen___Try/manifest.mpd", time.Minute*5),
+		domain.NewSong("Cristoph & Pete Tong ft Paul Rogers - Where's The Music Gone", "", "/media/kream/liquid_lab_vol_12/Cristoph___Pete_Tong_ft_Paul_Rogers___Where_s_The_Music_Gone/manifest.mpd", time.Minute*5),
+		domain.NewSong("KREAM - Manta", "", "/media/kream/liquid_lab_vol_12/KREAM___Manta/manifest.mpd", time.Minute*5),
+		domain.NewSong("Rivo - Last Night", "", "/media/kream/liquid_lab_vol_12/Rivo___Last_Night/manifest.mpd", time.Minute*5),
+	}
+
+	_, err := a.repo.AddAlbum(
+		"Liquid Lab Vol 12",
+		domain.NewDate(2025, 7, 5),
+		domain.NewArtist("Kream"),
+		liquidLabVol12)
+	if err != nil {
+		return fmt.Errorf("unable to add album: %w", err)
+	}
+
 	gatesOfMetalFriedChickenOfDeath := []domain.Song{
 		domain.NewSong("Away Doom", "", "/media/massacration/gates_of_metal_fried_chicken_of_death/Massacration___Away_Doom__QZurWCQGSkA_/manifest.mpd", time.Minute*5),
 		domain.NewSong("Cereal Metal", "", "/media/massacration/gates_of_metal_fried_chicken_of_death/Massacration___Cereal_Metal__JFP9dUUGtAo_/manifest.mpd", time.Minute*5),
@@ -58,7 +106,7 @@ func (a *application) feed() error {
 		domain.NewSong("The God Master", "", "/media/massacration/gates_of_metal_fried_chicken_of_death/Massacration___The_God_Master__3WQqnb0jqpM_/manifest.mpd", time.Minute*5),
 	}
 
-	_, err := a.repo.AddAlbum(
+	_, err = a.repo.AddAlbum(
 		"Gates of Metal Fried Chicken of Death",
 		domain.NewDate(2008, 3, 7),
 		domain.NewArtist("Massacration"),
