@@ -38,6 +38,28 @@ function App() {
 		return
 	}
 
+	const onNextSongButtonClick = () => {
+		if (currentSongUrl == null) {
+			return
+		}
+		const nextSong = getNextSong(albums, currentSongUrl)
+		if (nextSong == null) {
+			return
+		}
+		setCurrentSongUrl(nextSong)
+	}
+
+	const onPreviousSongButtonClick = () => {
+		if (currentSongUrl == null) {
+			return
+		}
+		const previousSong = getPreviousSong(albums, currentSongUrl)
+		if (previousSong == null) {
+			return
+		}
+		setCurrentSongUrl(previousSong)
+	}
+
 	useEffect(() => {
 		const fetchAlbums = async () => {
 			try {
@@ -89,13 +111,57 @@ function App() {
 			</main>
 			<footer className='footer'>
 				{currentSongUrl ? (
-					<DashPlayer src={currentSongUrl} onSongEnd={onSongEnd} autoplay />
+					<DashPlayer
+						src={currentSongUrl}
+						onSongEnd={onSongEnd}
+						onNextSong={onNextSongButtonClick}
+						onPreviousSong={onPreviousSongButtonClick}
+						autoplay
+					/>
 				) : (
-					<DashPlayer src='' onSongEnd={onSongEnd}/>
+					<DashPlayer
+						src=''
+						onSongEnd={onSongEnd}
+						onPreviousSong={onPreviousSongButtonClick}
+						onNextSong={onNextSongButtonClick}
+					/>
 				)}
 			</footer>
 		</div>
 	)
+}
+
+function getPreviousSong(albums: Album[], currentSongUrl: string): string | null {
+	for (let i = 0; i < albums.length; i++) {
+		const album = albums[i];
+		for (let j = 0; j < album.songs.length; j++) {
+			const song = album.songs[j];
+			if (song.file == currentSongUrl) {
+				const order = j - 1
+				if (order < 0) {
+					return album.songs[album.songs.length - 1].file
+				}
+				return album.songs[order].file
+			}
+		}
+	}
+	return null
+}
+function getNextSong(albums: Album[], currentSongUrl: string): string | null {
+	for (let i = 0; i < albums.length; i++) {
+		const album = albums[i];
+		for (let j = 0; j < album.songs.length; j++) {
+			const song = album.songs[j];
+			if (song.file == currentSongUrl) {
+				const order = j + 1
+				if (order >= album.songs.length) {
+					return album.songs[0].file
+				}
+				return album.songs[order].file
+			}
+		}
+	}
+	return null
 }
 
 export default App

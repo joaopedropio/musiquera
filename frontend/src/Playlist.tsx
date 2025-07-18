@@ -18,7 +18,7 @@ const Playlist: React.FC<PlaylistProps> = ({ album, setCurrentSongUrl, highLight
 						{album.songs.map(song => (
 							<li key={song.file} onClick={() => setCurrentSongUrl(song.file)} style={{ cursor: 'pointer' }}>
 								{highLightedSong != '' && song.file == highLightedSong ? (
-									<strong style={{ color: 'green' }}>{song.name}</strong>
+									<strong className='current-song'>{song.name}</strong>
 								) : (
 									<strong>{song.name}</strong>
 								)}

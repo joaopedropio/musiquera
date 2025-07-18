@@ -1,3 +1,14 @@
 .dashPlayer {
 	background-color: var(--bg);
+	display: flex;
+	justify-content: space-between;
+	align-items: strech;
+}
+
+.player-controls {
+	  display: flex;
+  gap: 8px; /* space between buttons */
+	flex-direction: column;
+  justify-content: center;
+	width: 100%
 }

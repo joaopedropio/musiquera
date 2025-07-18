@@ -3,3 +3,7 @@
 	min-width: 200px;
 	min-height: 200px;
  }
+
+ .current-song {
+	 color: var(--brand);
+ }
