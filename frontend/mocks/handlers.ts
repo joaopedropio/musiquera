@@ -3,6 +3,7 @@ import { http, HttpResponse } from 'msw'
 type Song = {
 	name: string;
 	file: string;
+	duration: number;
 }
 
 type Album = {
@@ -34,6 +35,7 @@ export const handlers = [
 				{
 					name: 'Master of Puppets',
 					file: '/somewhere',
+					duration: 124,
 				}
 			],
 		}

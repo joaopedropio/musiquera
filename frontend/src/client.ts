@@ -3,6 +3,7 @@ import axios from 'axios'
 export type Song = {
 	name: string;
 	file: string;
+	duration: number;
 }
 
 export type Album = {

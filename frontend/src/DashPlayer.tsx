@@ -10,7 +10,7 @@ interface DashPlayerProps {
 	onPreviousSong: () => void;
 }
 
-const DashPlayer: React.FC<DashPlayerProps> = ({ src, onSongEnd, autoplay, onNextSong, onPreviousSong}) => {
+const DashPlayer: React.FC<DashPlayerProps> = ({ src, onSongEnd, autoplay, onNextSong, onPreviousSong }) => {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [volume, setVolume] = useState(1); // Volume range: 0 to 1
@@ -106,16 +106,17 @@ const DashPlayer: React.FC<DashPlayerProps> = ({ src, onSongEnd, autoplay, onNex
 							</svg>
 						</button>
 					)}
-				<button onClick={() => onNextSong()} className="icon-button" title="Next">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-						<path d="M18 12L8 5v14zM20 5h-2v14h2z" />
-					</svg>
-				</button>
+					<button onClick={() => onNextSong()} className="icon-button" title="Next">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+							<path d="M18 12L8 5v14zM20 5h-2v14h2z" />
+						</svg>
+					</button>
 				</div>
 				<div>
 					<label>
 						<strong>{formatTime(currentTime)}</strong>
 						<input
+							className='progressBar'
 							type="range"
 							min="0"
 							max={duration || 0}
