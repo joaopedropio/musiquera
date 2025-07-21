@@ -10,6 +10,7 @@ import (
 
 type ArtistResponse struct {
 	Name string `json:"name"`
+	ProfileCoverPath string `json:"profileCoverPath"`
 }
 
 type ArtistController struct {
@@ -31,6 +32,7 @@ func (c *ArtistController) GetAllArtists(w http.ResponseWriter, r *http.Request)
 	for _, artist := range artists {
 		artistsResponse = append(artistsResponse, ArtistResponse{
 			Name: artist.Name(),
+			ProfileCoverPath: artist.ProfileCoverPhotoPath(),
 		})
 	}
 	err = json.NewEncoder(w).Encode(artistsResponse)

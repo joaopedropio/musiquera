@@ -8,4 +8,17 @@
 .no-dots {
     list-style-type: none;
     padding-left: 0; /* optional, removes indentation */
+	margin: 10px;
+}
+
+.artistCoverImg {
+	border-radius: 1rem;
+}
+
+.artistItem {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	flex-wrap: wrap;
+	align-content: stretch;
 }

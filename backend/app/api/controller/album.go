@@ -21,6 +21,11 @@ type AlbumController struct {
 	application app.Application
 }
 
+type Artist struct {
+	Name             string `json:"name"`
+	ProfileCoverPath string `json:"profileCoverPath"`
+}
+
 type Song struct {
 	Name string `json:"name"`
 	File string `json:"file"`
@@ -28,7 +33,7 @@ type Song struct {
 
 type AlbumResponse struct {
 	Name        string  `json:"name"`
-	Artist      string  `json:"artist"`
+	Artist      Artist  `json:"artist"`
 	ReleaseDate string  `json:"releaseDate"`
 	Songs       []*Song `json:"songs"`
 }
@@ -53,8 +58,11 @@ func (c *AlbumController) GetAlbumsByArtist(w http.ResponseWriter, r *http.Reque
 			songs = append(songs, s)
 		}
 		albumResponse := AlbumResponse{
-			Name:        album.Name(),
-			Artist:      album.Artist().Name(),
+			Name: album.Name(),
+			Artist: Artist{
+				album.Artist().Name(),
+				album.Artist().ProfileCoverPhotoPath(),
+			},
 			ReleaseDate: album.ReleaseDate().String(),
 			Songs:       songs,
 		}
@@ -84,8 +92,11 @@ func (c *AlbumController) GetMostRecent(w http.ResponseWriter, r *http.Request) 
 		songss = append(songss, s)
 	}
 	album := AlbumResponse{
-		Name:        fullAlbum.Name(),
-		Artist:      fullAlbum.Artist().Name(),
+		Name: fullAlbum.Name(),
+		Artist: Artist{
+			fullAlbum.Artist().Name(),
+			fullAlbum.Artist().ProfileCoverPhotoPath(),
+		},
 		ReleaseDate: fullAlbum.ReleaseDate().String(),
 		Songs:       songss,
 	}

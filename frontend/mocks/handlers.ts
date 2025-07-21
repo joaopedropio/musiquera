@@ -23,7 +23,13 @@ export const handlers = [
 		let a: Artist = {
 			name: 'Metallica'
 		}
-		return HttpResponse.json([a])
+		let b: Artist = {
+			name: 'Kream'
+		}
+		let c: Artist = {
+			name: 'Massacration'
+		}
+		return HttpResponse.json([a, b, c])
 	}),
 
 	http.get('/api/album/byArtist/:artistName', () => {

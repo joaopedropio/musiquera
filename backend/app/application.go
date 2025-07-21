@@ -84,7 +84,7 @@ func (a *application) feed() error {
 	_, err := a.repo.AddAlbum(
 		"Liquid Lab Vol 12",
 		domain.NewDate(2025, 7, 5),
-		domain.NewArtist("Kream"),
+		domain.NewArtist("Kream", "/media/kream/kream_profile_cover.jpg"),
 		liquidLabVol12)
 	if err != nil {
 		return fmt.Errorf("unable to add album: %w", err)
@@ -109,7 +109,7 @@ func (a *application) feed() error {
 	_, err = a.repo.AddAlbum(
 		"Gates of Metal Fried Chicken of Death",
 		domain.NewDate(2008, 3, 7),
-		domain.NewArtist("Massacration"),
+		domain.NewArtist("Massacration", "/media/massacration/massacration_profile_cover.webp"),
 		gatesOfMetalFriedChickenOfDeath)
 	if err != nil {
 		return fmt.Errorf("unable to add album: %w", err)
@@ -136,7 +136,7 @@ func (a *application) feed() error {
 	_, err = a.repo.AddAlbum(
 		"The Ophidian Trek (Live)",
 		domain.NewDate(2014, 9, 29),
-		domain.NewArtist("Meshuggah"),
+		domain.NewArtist("Meshuggah", "/media/meshuggah/meshuggah_profile_cover.jpg"),
 		theOphidianTrek)
 	if err != nil {
 		return fmt.Errorf("unable to add album: %w", err)
@@ -156,7 +156,7 @@ func (a *application) feed() error {
 	_, err = a.repo.AddAlbum(
 		"Obzen",
 		domain.NewDate(2008, 3, 7),
-		domain.NewArtist("Meshuggah"),
+		domain.NewArtist("Meshuggah", "/media/meshuggah/meshuggah_profile_cover.jpg"),
 		obzen)
 	if err != nil {
 		return fmt.Errorf("unable to add album: %w", err)
@@ -177,7 +177,7 @@ func (a *application) feed() error {
 	_, err = a.repo.AddAlbum(
 		"Nothing (Remastered 2006)",
 		domain.NewDate(2006, 10, 31),
-		domain.NewArtist("Meshuggah"),
+		domain.NewArtist("Meshuggah", "/media/meshuggah/meshuggah_profile_cover.jpg"),
 		nothingRemastered)
 	if err != nil {
 		return fmt.Errorf("unable to add album: %w", err)
@@ -197,7 +197,7 @@ func (a *application) feed() error {
 	_, err = a.repo.AddAlbum(
 		"Riding the Lightning",
 		domain.NewDate(1984, 7, 27),
-		domain.NewArtist("Metallica"),
+		domain.NewArtist("Metallica", "/media/metallica/metallica_profile_cover.jpg"),
 		ridingTheLigthningSongs)
 	if err != nil {
 		return fmt.Errorf("unable to add album: %w", err)
@@ -217,7 +217,7 @@ func (a *application) feed() error {
 	id, err := a.repo.AddAlbum(
 		"Master of Puppets",
 		domain.NewDate(1986, 3, 3),
-		domain.NewArtist("Metallica"),
+		domain.NewArtist("Metallica", "/media/metallica/metallica_profile_cover.jpg"),
 		masterOfPuppetsSongs)
 	if err != nil {
 		return fmt.Errorf("unable to add album: %w", err)

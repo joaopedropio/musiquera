@@ -8,13 +8,13 @@ export type Song = {
 
 export type Album = {
 	name: string;
-	artist: string;
 	releaseDate: string;
 	songs: Song[];
 }
 
 export type Artist = {
 	name: string;
+	profileCoverPath: string;
 }
 
 export class Client {
