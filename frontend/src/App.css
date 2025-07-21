@@ -7,10 +7,14 @@
 
 .content {
 	flex: 1;
-	overflow: hidden;
+	overflow: scroll;
 	display: flex;
 	padding: 1rem;
 	gap: 1rem;
+}
+
+.content::-webkit-scrollbar {
+	display: none;
 }
 
 .footer {
@@ -37,6 +41,10 @@
 	flex-direction: column;
 	background-color: var(--bg);
 	border: 1px solid var(--surface1);
-	overflow: hidden;
+	overflow: scroll;
 	border-radius: 1rem;
+}
+
+.list-container::-webkit-scrollbar {
+	display: none;
 }
