@@ -95,10 +95,10 @@ function App() {
 				<h1>Navbar</h1>
 			</nav>
 			<main className='content'>
-				<div className='list-container'>
+				<div className='list-container rad-shadow'>
 					<ArtistComponent artists={artists} setCurrentArtist={setCurrentArtist} currentArtist={currentArtist} />
 				</div>
-				<div className='list-container'>
+				<div className='list-container rad-shadow'>
 					{albums.length > 0 ? (
 						albums.map((album) => (
 							<Playlist album={album} setCurrentSongUrl={setCurrentSongUrl} highLightedSong={currentSongUrl} />

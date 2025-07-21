@@ -12,7 +12,7 @@ const Playlist: React.FC<PlaylistProps> = ({ album, setCurrentSongUrl, highLight
 			{!album || !album.songs || album.songs.length === 0 ? (
 				<p>No songs found.</p>
 			) : (
-				<div>
+				<div style={{margin: '10px'}}>
 					<h2 style={{ textAlign: 'center', color: 'var(--text1)' }}>{album?.name}</h2>
 					<table style={{ width: '100%', borderCollapse: 'collapse' }}>
 						<thead style={{ borderBottom: '2px solid var(--surface2)' }}>

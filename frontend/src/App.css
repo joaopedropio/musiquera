@@ -38,4 +38,5 @@
 	background-color: var(--bg);
 	border: 1px solid var(--surface1);
 	overflow: hidden;
+	border-radius: 1rem;
 }
