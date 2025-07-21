@@ -91,9 +91,11 @@ function App() {
 
 	return (
 		<div className='app-container'>
+			{/*
 			<nav className='navbar'>
 				<h1>Navbar</h1>
 			</nav>
+			*/}
 			<main className='content'>
 				<div className='list-container rad-shadow'>
 					<ArtistComponent artists={artists} setCurrentArtist={setCurrentArtist} currentArtist={currentArtist} />
