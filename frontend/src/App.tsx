@@ -96,12 +96,11 @@ function App() {
 			</nav>
 			<main className='content'>
 				<div className='list-container'>
-					<ArtistComponent artists={artists} setCurrentArtist={setCurrentArtist} />
+					<ArtistComponent artists={artists} setCurrentArtist={setCurrentArtist} currentArtist={currentArtist} />
 				</div>
 				<div className='list-container'>
 					{albums.length > 0 ? (
 						albums.map((album) => (
-
 							<Playlist album={album} setCurrentSongUrl={setCurrentSongUrl} highLightedSong={currentSongUrl} />
 						))
 					) : (
