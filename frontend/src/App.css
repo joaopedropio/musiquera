@@ -7,7 +7,7 @@
 
 .content {
 	flex: 1;
-	overflow: scroll;
+	overflow: hidden;
 	display: flex;
 	padding: 1rem;
 	gap: 1rem;
@@ -37,5 +37,5 @@
 	flex-direction: column;
 	background-color: var(--bg);
 	border: 1px solid #ddd;
-	overflow: scroll;
+	overflow: hidden;
 }
