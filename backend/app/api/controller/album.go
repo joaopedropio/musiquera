@@ -34,6 +34,7 @@ type Song struct {
 type AlbumResponse struct {
 	Name        string  `json:"name"`
 	Artist      Artist  `json:"artist"`
+	Cover       string  `json:"cover"`
 	ReleaseDate string  `json:"releaseDate"`
 	Songs       []*Song `json:"songs"`
 }
@@ -58,7 +59,8 @@ func (c *AlbumController) GetAlbumsByArtist(w http.ResponseWriter, r *http.Reque
 			songs = append(songs, s)
 		}
 		albumResponse := AlbumResponse{
-			Name: album.Name(),
+			Name:  album.Name(),
+			Cover: album.Cover(),
 			Artist: Artist{
 				album.Artist().Name(),
 				album.Artist().ProfileCoverPhotoPath(),

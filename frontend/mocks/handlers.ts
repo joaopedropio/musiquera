@@ -34,7 +34,7 @@ export const handlers = [
 
 	http.get('/api/album/byArtist/:artistName', () => {
 		let a: Album = {
-			name: 'Master of Puppest',
+			name: 'Master of Puppets',
 			artist: 'Metallica',
 			releaseDate: '1986-03-03',
 			songs: [
@@ -50,7 +50,7 @@ export const handlers = [
 
 	http.get('/api/album/mostRecent', () => {
 		let a: Album = {
-			name: 'Master of Puppest',
+			name: 'Master of Puppets',
 			artist: 'Metallica',
 			releaseDate: '1986-03-03',
 			songs: [],

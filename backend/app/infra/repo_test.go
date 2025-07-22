@@ -19,7 +19,7 @@ func TestRepo_ShouldAddAlbum_WhenAlbumIsAdded(t *testing.T) {
 	songs := []domain.Song{}
 
 	// Act
-	id, err := repo.AddAlbum(name, release, artist, songs)
+	id, err := repo.AddAlbum(name, "", release, artist, songs)
 
 	// Assert
 	assert.NoError(t, err)

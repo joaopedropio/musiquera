@@ -33,11 +33,12 @@ func (r *repo) GetAlbumsByArtist(artistName string) ([]domain.FullAlbum, error) 
 	return albums, nil
 }
 
-func (r *repo) AddAlbum(name string, release domain.Date, artist domain.Artist, songs []domain.Song) (uuid.UUID, error) {
+func (r *repo) AddAlbum(name string, cover string, release domain.Date, artist domain.Artist, songs []domain.Song) (uuid.UUID, error) {
 	id := uuid.New()
 	a := domain.NewFullAlbum(
 		id,
 		name,
+		cover,
 		release,
 		artist,
 		songs,

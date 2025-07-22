@@ -8,6 +8,7 @@ export type Song = {
 
 export type Album = {
 	name: string;
+	cover: string;
 	releaseDate: string;
 	songs: Song[];
 }

@@ -1,6 +1,15 @@
  .playlist {
  }
 
+ .albumCoverImg {
+	border-radius: 1rem;
+ }
+
+ .album {
+	 display: flex;
+	 justify-content: center;
+ }
+
  .current-song {
 	 color: var(--brand);
  }
