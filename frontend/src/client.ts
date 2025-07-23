@@ -1,5 +1,10 @@
 import axios from 'axios'
 
+//const ReleaseTypeAlbum = 'album'
+//const ReleaseTypeLiveSet = 'liveSet'
+
+type ReleaseType = string
+
 export type Track = {
 	name: string;
 	file: string;
@@ -9,6 +14,7 @@ export type Track = {
 export type Release = {
 	name: string;
 	cover: string;
+	type: ReleaseType;
 	releaseDate: string;
 	tracks: Track[];
 }

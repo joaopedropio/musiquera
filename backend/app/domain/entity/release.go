@@ -8,6 +8,7 @@ import (
 type Release interface {
 	ID() uuid.UUID
 	Name() string
+	Type() ReleaseType
 	Cover() string
 	ReleaseDate() Date
 	Artist() Artist
@@ -17,6 +18,7 @@ type Release interface {
 type release struct {
 	id          uuid.UUID
 	name        string
+	releaseType ReleaseType
 	releaseDate Date
 	cover       string
 	artist      Artist
@@ -29,6 +31,10 @@ func (a *release) ID() uuid.UUID {
 
 func (a *release) Name() string {
 	return a.name
+}
+
+func (a *release) Type() ReleaseType {
+	return a.releaseType
 }
 
 func (a *release) Cover() string {
@@ -47,10 +53,11 @@ func (a *release) CreatedAt() time.Time {
 	return a.createdAt
 }
 
-func NewRelease(name string, releaseDate Date, cover string, artist Artist) Release {
+func NewRelease(name string, releaseType ReleaseType, releaseDate Date, cover string, artist Artist) Release {
 	return &release{
 		uuid.New(),
 		name,
+		releaseType,
 		releaseDate,
 		cover,
 		artist,

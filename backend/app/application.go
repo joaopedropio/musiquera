@@ -83,6 +83,7 @@ func (a *application) feed() error {
 
 	_, err := a.repo.AddRelease(
 		"Liquid Lab Vol 12",
+		domain.ReleaseTypeLiveSet,
 		"/media/kream/liquid_lab_vol_12/liquid_lab_vol_12_cover.jpg",
 		domain.NewDate(2025, 7, 5),
 		domain.NewArtist("Kream", "/media/kream/kream_profile_cover.jpg"),
@@ -109,6 +110,7 @@ func (a *application) feed() error {
 
 	_, err = a.repo.AddRelease(
 		"Gates of Metal Fried Chicken of Death",
+		domain.ReleaseTypeAlbum,
 		"/media/massacration/gates_of_metal_fried_chicken_of_death/gates_of_metal_fried_chicken_of_death.jpg",
 		domain.NewDate(2008, 3, 7),
 		domain.NewArtist("Massacration", "/media/massacration/massacration_profile_cover.webp"),
@@ -137,6 +139,7 @@ func (a *application) feed() error {
 
 	_, err = a.repo.AddRelease(
 		"The Ophidian Trek (Live)",
+		domain.ReleaseTypeAlbum,
 		"/media/meshuggah/the_ophidian_trek/ophidian_trek_cover.jpg",
 		domain.NewDate(2014, 9, 29),
 		domain.NewArtist("Meshuggah", "/media/meshuggah/meshuggah_profile_cover.jpg"),
@@ -158,6 +161,7 @@ func (a *application) feed() error {
 	}
 	_, err = a.repo.AddRelease(
 		"Obzen",
+		domain.ReleaseTypeAlbum,
 		"/media/meshuggah/obzen/obsen_cover.jpg",
 		domain.NewDate(2008, 3, 7),
 		domain.NewArtist("Meshuggah", "/media/meshuggah/meshuggah_profile_cover.jpg"),
@@ -180,6 +184,7 @@ func (a *application) feed() error {
 	}
 	_, err = a.repo.AddRelease(
 		"Nothing (Remastered 2006)",
+		domain.ReleaseTypeAlbum,
 		"/media/meshuggah/nothing_remastered/nothing_cover.jpg",
 		domain.NewDate(2006, 10, 31),
 		domain.NewArtist("Meshuggah", "/media/meshuggah/meshuggah_profile_cover.jpg"),
@@ -201,6 +206,7 @@ func (a *application) feed() error {
 
 	_, err = a.repo.AddRelease(
 		"Riding the Lightning",
+		domain.ReleaseTypeAlbum,
 		"/media/metallica/riding_the_lightning/riding_the_lightning_cover.jpg",
 		domain.NewDate(1984, 7, 27),
 		domain.NewArtist("Metallica", "/media/metallica/metallica_profile_cover.jpg"),
@@ -222,6 +228,7 @@ func (a *application) feed() error {
 
 	id, err := a.repo.AddRelease(
 		"Master of Puppets",
+		domain.ReleaseTypeAlbum,
 		"/media/metallica/master_of_puppets/master_of_puppets_cover.jpg",
 		domain.NewDate(1986, 3, 3),
 		domain.NewArtist("Metallica", "/media/metallica/metallica_profile_cover.jpg"),

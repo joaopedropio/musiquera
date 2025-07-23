@@ -1,5 +1,10 @@
 import { http, HttpResponse } from 'msw'
 
+const ReleaseTypeAlbum = 'album'
+//const ReleaseTypeLiveSet = 'liveSet'
+
+type ReleaseType = string
+
 type Track = {
 	name: string;
 	file: string;
@@ -10,6 +15,7 @@ type Release = {
 	name: string;
 	artist: string;
 	releaseDate: string;
+	type: ReleaseType;
 	tracks: Track[];
 }
 
@@ -36,6 +42,7 @@ export const handlers = [
 		let a: Release = {
 			name: 'Master of Puppets',
 			artist: 'Metallica',
+			type: ReleaseTypeAlbum,
 			releaseDate: '1986-03-03',
 			tracks: [
 				{
@@ -52,6 +59,7 @@ export const handlers = [
 		let a: Release = {
 			name: 'Master of Puppets',
 			artist: 'Metallica',
+			type: ReleaseTypeAlbum,
 			releaseDate: '1986-03-03',
 			tracks: [],
 		}

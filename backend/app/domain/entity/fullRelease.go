@@ -5,9 +5,15 @@ import (
 	"time"
 )
 
+const ReleaseTypeAlbum = ReleaseType("album")
+const ReleaseTypeLiveSet = ReleaseType("liveSet")
+
+type ReleaseType string
+
 type fullRelease struct {
 	id        uuid.UUID
 	name      string
+	releaseType ReleaseType
 	cover     string
 	release   Date
 	artist    Artist
@@ -15,11 +21,12 @@ type fullRelease struct {
 	createdAt time.Time
 }
 
-func NewFullRelease(id uuid.UUID, name string, cover string, release Date, artist Artist, tracks []Track, createdAt time.Time) FullRelease {
+func NewFullRelease(id uuid.UUID, name string, releaseType ReleaseType, cover string, release Date, artist Artist, tracks []Track, createdAt time.Time) FullRelease {
 	return &fullRelease{
 		id:        id,
 		name:      name,
 		cover:     cover,
+		releaseType: releaseType,
 		release:   release,
 		artist:    artist,
 		tracks:     tracks,
@@ -31,6 +38,7 @@ type FullRelease interface {
 	ID() uuid.UUID
 	Name() string
 	Cover() string
+	Type() ReleaseType
 	ReleaseDate() Date
 	Artist() Artist
 	Tracks() []Track
@@ -43,6 +51,10 @@ func (a *fullRelease) ID() uuid.UUID {
 
 func (a *fullRelease) Name() string {
 	return a.name
+}
+
+func (a *fullRelease) Type() ReleaseType {
+	return a.releaseType
 }
 
 func (a *fullRelease) Cover() string {
