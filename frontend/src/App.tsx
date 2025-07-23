@@ -8,28 +8,28 @@ import { Client } from './client'
 import type { Artist, Release } from './client'
 
 function App() {
-	const [currentSongUrl, setCurrentSongUrl] = useState<string | null>(null);
+	const [currentTrackUrl, setCurrentTrackUrl] = useState<string | null>(null);
 	const [currentArtist, setCurrentArtist] = useState<string | null>(null)
 	const [artists, setArtists] = useState<Artist[]>([])
 	const [releases, setReleases] = useState<Release[]>([])
 
 	const client = new Client()
 
-	const onSongEnd = () => {
-		if (currentSongUrl == null) {
+	const onTrackEnd = () => {
+		if (currentTrackUrl == null) {
 			return
 		}
 		for (let i = 0; i < releases.length; i++) {
 			const release = releases[i];
-			for (let j = 0; j < release.songs.length; j++) {
-				const song = release.songs[j];
-				if (song.file == currentSongUrl) {
+			for (let j = 0; j < release.tracks.length; j++) {
+				const track = release.tracks[j];
+				if (track.file == currentTrackUrl) {
 					const order = j + 1
-					if (order >= release.songs.length) {
-						setCurrentSongUrl(release.songs[0].file)
+					if (order >= release.tracks.length) {
+						setCurrentTrackUrl(release.tracks[0].file)
 						return
 					}
-					setCurrentSongUrl(release.songs[order].file)
+					setCurrentTrackUrl(release.tracks[order].file)
 					return
 				}
 
@@ -38,26 +38,26 @@ function App() {
 		return
 	}
 
-	const onNextSongButtonClick = () => {
-		if (currentSongUrl == null) {
+	const onNextTrackButtonClick = () => {
+		if (currentTrackUrl == null) {
 			return
 		}
-		const nextSong = getNextSong(releases, currentSongUrl)
-		if (nextSong == null) {
+		const nextTrack = getNextTrack(releases, currentTrackUrl)
+		if (nextTrack == null) {
 			return
 		}
-		setCurrentSongUrl(nextSong)
+		setCurrentTrackUrl(nextTrack)
 	}
 
-	const onPreviousSongButtonClick = () => {
-		if (currentSongUrl == null) {
+	const onPreviousTrackButtonClick = () => {
+		if (currentTrackUrl == null) {
 			return
 		}
-		const previousSong = getPreviousSong(releases, currentSongUrl)
-		if (previousSong == null) {
+		const previousTrack = getPreviousTrack(releases, currentTrackUrl)
+		if (previousTrack == null) {
 			return
 		}
-		setCurrentSongUrl(previousSong)
+		setCurrentTrackUrl(previousTrack)
 	}
 
 	useEffect(() => {
@@ -103,7 +103,7 @@ function App() {
 				<div className='list-container rad-shadow'>
 					{releases.length > 0 ? (
 						releases.map((release) => (
-							<Playlist release={release} setCurrentSongUrl={setCurrentSongUrl} highLightedSong={currentSongUrl} />
+							<Playlist release={release} setCurrentTrackUrl={setCurrentTrackUrl} highLightedTrack={currentTrackUrl} />
 						))
 					) : (
 						<strong>Pick a artist</strong>
@@ -111,20 +111,20 @@ function App() {
 				</div>
 			</main>
 			<footer className='footer'>
-				{currentSongUrl ? (
+				{currentTrackUrl ? (
 					<DashPlayer
-						src={currentSongUrl}
-						onSongEnd={onSongEnd}
-						onNextSong={onNextSongButtonClick}
-						onPreviousSong={onPreviousSongButtonClick}
+						src={currentTrackUrl}
+						onTrackEnd={onTrackEnd}
+						onNextTrack={onNextTrackButtonClick}
+						onPreviousTrack={onPreviousTrackButtonClick}
 						autoplay
 					/>
 				) : (
 					<DashPlayer
 						src=''
-						onSongEnd={onSongEnd}
-						onPreviousSong={onPreviousSongButtonClick}
-						onNextSong={onNextSongButtonClick}
+						onTrackEnd={onTrackEnd}
+						onPreviousTrack={onPreviousTrackButtonClick}
+						onNextTrack={onNextTrackButtonClick}
 					/>
 				)}
 			</footer>
@@ -132,33 +132,33 @@ function App() {
 	)
 }
 
-function getPreviousSong(releases: Release[], currentSongUrl: string): string | null {
+function getPreviousTrack(releases: Release[], currentTrackUrl: string): string | null {
 	for (let i = 0; i < releases.length; i++) {
 		const release = releases[i];
-		for (let j = 0; j < release.songs.length; j++) {
-			const song = release.songs[j];
-			if (song.file == currentSongUrl) {
+		for (let j = 0; j < release.tracks.length; j++) {
+			const track = release.tracks[j];
+			if (track.file == currentTrackUrl) {
 				const order = j - 1
 				if (order < 0) {
-					return release.songs[release.songs.length - 1].file
+					return release.tracks[release.tracks.length - 1].file
 				}
-				return release.songs[order].file
+				return release.tracks[order].file
 			}
 		}
 	}
 	return null
 }
-function getNextSong(releases: Release[], currentSongUrl: string): string | null {
+function getNextTrack(releases: Release[], currentTrackUrl: string): string | null {
 	for (let i = 0; i < releases.length; i++) {
 		const release = releases[i];
-		for (let j = 0; j < release.songs.length; j++) {
-			const song = release.songs[j];
-			if (song.file == currentSongUrl) {
+		for (let j = 0; j < release.tracks.length; j++) {
+			const track = release.tracks[j];
+			if (track.file == currentTrackUrl) {
 				const order = j + 1
-				if (order >= release.songs.length) {
-					return release.songs[0].file
+				if (order >= release.tracks.length) {
+					return release.tracks[0].file
 				}
-				return release.songs[order].file
+				return release.tracks[order].file
 			}
 		}
 	}

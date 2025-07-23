@@ -4,13 +4,13 @@ import './DashPlayer.css'
 
 interface DashPlayerProps {
 	src: string;
-	onSongEnd: () => void;
+	onTrackEnd: () => void;
 	autoplay?: boolean;
-	onNextSong: () => void;
-	onPreviousSong: () => void;
+	onNextTrack: () => void;
+	onPreviousTrack: () => void;
 }
 
-const DashPlayer: React.FC<DashPlayerProps> = ({ src, onSongEnd, autoplay, onNextSong, onPreviousSong }) => {
+const DashPlayer: React.FC<DashPlayerProps> = ({ src, onTrackEnd: onTrackEnd, autoplay, onNextTrack: onNextTrack, onPreviousTrack: onPreviousTrack }) => {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [volume, setVolume] = useState(1); // Volume range: 0 to 1
@@ -85,10 +85,10 @@ const DashPlayer: React.FC<DashPlayerProps> = ({ src, onSongEnd, autoplay, onNex
 
 	return (
 		<div className='dashPlayer'>
-			<audio ref={audioRef} preload="auto" onEnded={onSongEnd} />
+			<audio ref={audioRef} preload="auto" onEnded={onTrackEnd} />
 			<div className='player-controls'>
 				<div>
-					<button onClick={() => onPreviousSong()} className="icon-button" title="Previous">
+					<button onClick={() => onPreviousTrack()} className="icon-button" title="Previous">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
 							<path d="M6 12l10 7V5zM4 5h2v14H4z" />
 						</svg>
@@ -106,7 +106,7 @@ const DashPlayer: React.FC<DashPlayerProps> = ({ src, onSongEnd, autoplay, onNex
 							</svg>
 						</button>
 					)}
-					<button onClick={() => onNextSong()} className="icon-button" title="Next">
+					<button onClick={() => onNextTrack()} className="icon-button" title="Next">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
 							<path d="M18 12L8 5v14zM20 5h-2v14h2z" />
 						</svg>

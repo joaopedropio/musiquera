@@ -2,14 +2,14 @@ import type { Release } from './client';
 import './Playlist.css'
 
 interface PlaylistProps {
-	setCurrentSongUrl: (url: string) => void;
-	highLightedSong: string | null;
+	setCurrentTrackUrl: (url: string) => void;
+	highLightedTrack: string | null;
 	release: Release;
 }
-const Playlist: React.FC<PlaylistProps> = ({ release: release, setCurrentSongUrl, highLightedSong }) => {
+const Playlist: React.FC<PlaylistProps> = ({ release: release, setCurrentTrackUrl: setCurrentTrackUrl, highLightedTrack: highLightedTrack }) => {
 	return (
 		<div className='playlist'>
-			{!release || !release.songs || release.songs.length === 0 ? (
+			{!release || !release.tracks || release.tracks.length === 0 ? (
 				<p>No songs found.</p>
 			) : (
 				<div style={{ margin: '10px' }}>
@@ -25,16 +25,16 @@ const Playlist: React.FC<PlaylistProps> = ({ release: release, setCurrentSongUrl
 							</tr>
 						</thead>
 						<tbody>
-							{release.songs.map(song => (
-								<tr onClick={() => setCurrentSongUrl(song.file)} style={{ cursor: 'pointer' }}>
-									<td key={song.file} style={{ textAlign: 'left', color: 'var(--text1)' }}>
-										{highLightedSong != '' && song.file == highLightedSong ? (
-											<strong className='current-song'>{song.name}</strong>
+							{release.tracks.map(track => (
+								<tr onClick={() => setCurrentTrackUrl(track.file)} style={{ cursor: 'pointer' }}>
+									<td key={track.file} style={{ textAlign: 'left', color: 'var(--text1)' }}>
+										{highLightedTrack != '' && track.file == highLightedTrack ? (
+											<strong className='current-song'>{track.name}</strong>
 										) : (
-											<strong>{song.name}</strong>
+											<strong>{track.name}</strong>
 										)}
 									</td>
-									<td style={{ textAlign: 'right', color: 'var(--text2)' }}>{formatTime(song.duration)}</td>
+									<td style={{ textAlign: 'right', color: 'var(--text2)' }}>{formatTime(track.duration)}</td>
 								</tr>
 							))}
 						</tbody>

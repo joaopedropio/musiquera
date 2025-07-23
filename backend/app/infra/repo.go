@@ -33,7 +33,7 @@ func (r *repo) GetReleasesByArtist(artistName string) ([]domain.FullRelease, err
 	return releases, nil
 }
 
-func (r *repo) AddRelease(name string, cover string, release domain.Date, artist domain.Artist, songs []domain.Song) (uuid.UUID, error) {
+func (r *repo) AddRelease(name string, cover string, release domain.Date, artist domain.Artist, tracks []domain.Track) (uuid.UUID, error) {
 	id := uuid.New()
 	a := domain.NewFullRelease(
 		id,
@@ -41,7 +41,7 @@ func (r *repo) AddRelease(name string, cover string, release domain.Date, artist
 		cover,
 		release,
 		artist,
-		songs,
+		tracks,
 		time.Now(),
 	)
 	r.releases = append(r.releases, a)
@@ -64,7 +64,6 @@ func (r *repo) GetRelease(id uuid.UUID) (domain.Release, error) {
 func (r *repo) GetFullRelease(id uuid.UUID) (domain.FullRelease, error) {
 	for _, a := range r.releases {
 		if a.ID().String() == id.String() {
-			//return a.name, a.release, a.artist, a.songs, nil
 			return a, nil
 		}
 	}

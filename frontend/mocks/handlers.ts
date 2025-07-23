@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw'
 
-type Song = {
+type Track = {
 	name: string;
 	file: string;
 	duration: number;
@@ -10,7 +10,7 @@ type Release = {
 	name: string;
 	artist: string;
 	releaseDate: string;
-	songs: Song[];
+	tracks: Track[];
 }
 
 type Artist = {
@@ -37,7 +37,7 @@ export const handlers = [
 			name: 'Master of Puppets',
 			artist: 'Metallica',
 			releaseDate: '1986-03-03',
-			songs: [
+			tracks: [
 				{
 					name: 'Master of Puppets',
 					file: '/somewhere',
@@ -53,7 +53,7 @@ export const handlers = [
 			name: 'Master of Puppets',
 			artist: 'Metallica',
 			releaseDate: '1986-03-03',
-			songs: [],
+			tracks: [],
 		}
 		return HttpResponse.json([a])
 	}),

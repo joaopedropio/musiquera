@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export type Song = {
+export type Track = {
 	name: string;
 	file: string;
 	duration: number;
@@ -10,7 +10,7 @@ export type Release = {
 	name: string;
 	cover: string;
 	releaseDate: string;
-	songs: Song[];
+	tracks: Track[];
 }
 
 export type Artist = {

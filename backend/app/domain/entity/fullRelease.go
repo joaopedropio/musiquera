@@ -11,18 +11,18 @@ type fullRelease struct {
 	cover     string
 	release   Date
 	artist    Artist
-	songs     []Song
+	tracks     []Track
 	createdAt time.Time
 }
 
-func NewFullRelease(id uuid.UUID, name string, cover string, release Date, artist Artist, songs []Song, createdAt time.Time) FullRelease {
+func NewFullRelease(id uuid.UUID, name string, cover string, release Date, artist Artist, tracks []Track, createdAt time.Time) FullRelease {
 	return &fullRelease{
 		id:        id,
 		name:      name,
 		cover:     cover,
 		release:   release,
 		artist:    artist,
-		songs:     songs,
+		tracks:     tracks,
 		createdAt: createdAt,
 	}
 }
@@ -33,7 +33,7 @@ type FullRelease interface {
 	Cover() string
 	ReleaseDate() Date
 	Artist() Artist
-	Songs() []Song
+	Tracks() []Track
 	CreatedAt() time.Time
 }
 
@@ -56,8 +56,8 @@ func (a *fullRelease) Artist() Artist {
 	return a.artist
 }
 
-func (a *fullRelease) Songs() []Song {
-	return a.songs
+func (a *fullRelease) Tracks() []Track {
+	return a.tracks
 }
 
 func (a *fullRelease) CreatedAt() time.Time {

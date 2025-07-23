@@ -16,10 +16,10 @@ func TestRepo_ShouldAddRelease_WhenReleaseIsAdded(t *testing.T) {
 	name := "release_name"
 	artist := domain.NewArtist("artist_name", "profile_photo.png")
 	release := domain.NewDate(2000, 1, 1)
-	songs := []domain.Song{}
+	tracks := []domain.Track{}
 
 	// Act
-	id, err := repo.AddRelease(name, "", release, artist, songs)
+	id, err := repo.AddRelease(name, "", release, artist, tracks)
 
 	// Assert
 	assert.NoError(t, err)

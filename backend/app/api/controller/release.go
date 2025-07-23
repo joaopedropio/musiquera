@@ -26,7 +26,7 @@ type Artist struct {
 	ProfileCoverPath string `json:"profileCoverPath"`
 }
 
-type Song struct {
+type Track struct {
 	Name string `json:"name"`
 	File string `json:"file"`
 }
@@ -36,7 +36,7 @@ type ReleaseResponse struct {
 	Artist      Artist  `json:"artist"`
 	Cover       string  `json:"cover"`
 	ReleaseDate string  `json:"releaseDate"`
-	Songs       []*Song `json:"songs"`
+	Tracks       []*Track `json:"tracks"`
 }
 
 func (c *ReleaseController) GetReleasesByArtist(w http.ResponseWriter, r *http.Request) {
@@ -50,13 +50,13 @@ func (c *ReleaseController) GetReleasesByArtist(w http.ResponseWriter, r *http.R
 	}
 	var releaseResponses []ReleaseResponse
 	for _, release := range fullReleases {
-		var songs []*Song
-		for _, song := range release.Songs() {
-			s := &Song{
-				Name: song.Name(),
-				File: song.File(),
+		var tracks []*Track
+		for _, track := range release.Tracks() {
+			s := &Track{
+				Name: track.Name(),
+				File: track.File(),
 			}
-			songs = append(songs, s)
+			tracks = append(tracks, s)
 		}
 		releaseResponse := ReleaseResponse{
 			Name:  release.Name(),
@@ -66,7 +66,7 @@ func (c *ReleaseController) GetReleasesByArtist(w http.ResponseWriter, r *http.R
 				release.Artist().ProfileCoverPhotoPath(),
 			},
 			ReleaseDate: release.ReleaseDate().String(),
-			Songs:       songs,
+			Tracks:       tracks,
 		}
 		releaseResponses = append(releaseResponses, releaseResponse)
 	}
@@ -85,13 +85,13 @@ func (c *ReleaseController) GetMostRecent(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		http.Error(w, fmt.Sprintf("unable to get most recent release: %s", err.Error()), 500)
 	}
-	var songss []*Song
-	for _, song := range fullRelease.Songs() {
-		s := &Song{
-			Name: song.Name(),
-			File: song.File(),
+	var tracks []*Track
+	for _, track := range fullRelease.Tracks() {
+		s := &Track{
+			Name: track.Name(),
+			File: track.File(),
 		}
-		songss = append(songss, s)
+		tracks = append(tracks, s)
 	}
 	release := ReleaseResponse{
 		Name: fullRelease.Name(),
@@ -100,7 +100,7 @@ func (c *ReleaseController) GetMostRecent(w http.ResponseWriter, r *http.Request
 			fullRelease.Artist().ProfileCoverPhotoPath(),
 		},
 		ReleaseDate: fullRelease.ReleaseDate().String(),
-		Songs:       songss,
+		Tracks:       tracks,
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
