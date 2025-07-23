@@ -6,10 +6,10 @@ import (
 )
 
 type Repo interface {
-	GetAlbumsByArtist(artistName string) ([]entity.FullAlbum, error)
+	GetReleasesByArtist(artistName string) ([]entity.FullRelease, error)
 	GetArtists() ([]entity.Artist, error)
-	AddAlbum(name string, cover string, release entity.Date, artist entity.Artist, songs []entity.Song) (uuid.UUID, error)
-	GetAlbum(id uuid.UUID) (entity.Album, error)
-	GetFullAlbum(id uuid.UUID) (entity.FullAlbum, error)
-	GetMostRecentAlbum() (entity.FullAlbum, error)
+	AddRelease(name string, cover string, release entity.Date, artist entity.Artist, songs []entity.Song) (uuid.UUID, error)
+	GetRelease(id uuid.UUID) (entity.Release, error)
+	GetFullRelease(id uuid.UUID) (entity.FullRelease, error)
+	GetMostRecentRelease() (entity.FullRelease, error)
 }

@@ -5,13 +5,13 @@ import DashPlayer from './DashPlayer'
 import Playlist from './Playlist'
 import ArtistComponent from './Artist'
 import { Client } from './client'
-import type { Artist, Album } from './client'
+import type { Artist, Release } from './client'
 
 function App() {
 	const [currentSongUrl, setCurrentSongUrl] = useState<string | null>(null);
 	const [currentArtist, setCurrentArtist] = useState<string | null>(null)
 	const [artists, setArtists] = useState<Artist[]>([])
-	const [albums, setAlbums] = useState<Album[]>([])
+	const [releases, setReleases] = useState<Release[]>([])
 
 	const client = new Client()
 
@@ -19,17 +19,17 @@ function App() {
 		if (currentSongUrl == null) {
 			return
 		}
-		for (let i = 0; i < albums.length; i++) {
-			const album = albums[i];
-			for (let j = 0; j < album.songs.length; j++) {
-				const song = album.songs[j];
+		for (let i = 0; i < releases.length; i++) {
+			const release = releases[i];
+			for (let j = 0; j < release.songs.length; j++) {
+				const song = release.songs[j];
 				if (song.file == currentSongUrl) {
 					const order = j + 1
-					if (order >= album.songs.length) {
-						setCurrentSongUrl(album.songs[0].file)
+					if (order >= release.songs.length) {
+						setCurrentSongUrl(release.songs[0].file)
 						return
 					}
-					setCurrentSongUrl(album.songs[order].file)
+					setCurrentSongUrl(release.songs[order].file)
 					return
 				}
 
@@ -42,7 +42,7 @@ function App() {
 		if (currentSongUrl == null) {
 			return
 		}
-		const nextSong = getNextSong(albums, currentSongUrl)
+		const nextSong = getNextSong(releases, currentSongUrl)
 		if (nextSong == null) {
 			return
 		}
@@ -53,7 +53,7 @@ function App() {
 		if (currentSongUrl == null) {
 			return
 		}
-		const previousSong = getPreviousSong(albums, currentSongUrl)
+		const previousSong = getPreviousSong(releases, currentSongUrl)
 		if (previousSong == null) {
 			return
 		}
@@ -61,18 +61,18 @@ function App() {
 	}
 
 	useEffect(() => {
-		const fetchAlbums = async () => {
+		const fetchReleases = async () => {
 			try {
 				if (currentArtist) {
-					const albs = await client.getAlbumsByArtist(currentArtist)
-					setAlbums(albs)
+					const albs = await client.getReleasesByArtist(currentArtist)
+					setReleases(albs)
 				}
 			} catch (err) {
-				console.error("error fetching albums by artist: ", err)
+				console.error("error fetching releases by artist: ", err)
 			}
 
 		}
-		fetchAlbums()
+		fetchReleases()
 	}, [currentArtist])
 
 	useEffect(() => {
@@ -101,9 +101,9 @@ function App() {
 					<ArtistComponent artists={artists} setCurrentArtist={setCurrentArtist} currentArtist={currentArtist} />
 				</div>
 				<div className='list-container rad-shadow'>
-					{albums.length > 0 ? (
-						albums.map((album) => (
-							<Playlist album={album} setCurrentSongUrl={setCurrentSongUrl} highLightedSong={currentSongUrl} />
+					{releases.length > 0 ? (
+						releases.map((release) => (
+							<Playlist release={release} setCurrentSongUrl={setCurrentSongUrl} highLightedSong={currentSongUrl} />
 						))
 					) : (
 						<strong>Pick a artist</strong>
@@ -132,33 +132,33 @@ function App() {
 	)
 }
 
-function getPreviousSong(albums: Album[], currentSongUrl: string): string | null {
-	for (let i = 0; i < albums.length; i++) {
-		const album = albums[i];
-		for (let j = 0; j < album.songs.length; j++) {
-			const song = album.songs[j];
+function getPreviousSong(releases: Release[], currentSongUrl: string): string | null {
+	for (let i = 0; i < releases.length; i++) {
+		const release = releases[i];
+		for (let j = 0; j < release.songs.length; j++) {
+			const song = release.songs[j];
 			if (song.file == currentSongUrl) {
 				const order = j - 1
 				if (order < 0) {
-					return album.songs[album.songs.length - 1].file
+					return release.songs[release.songs.length - 1].file
 				}
-				return album.songs[order].file
+				return release.songs[order].file
 			}
 		}
 	}
 	return null
 }
-function getNextSong(albums: Album[], currentSongUrl: string): string | null {
-	for (let i = 0; i < albums.length; i++) {
-		const album = albums[i];
-		for (let j = 0; j < album.songs.length; j++) {
-			const song = album.songs[j];
+function getNextSong(releases: Release[], currentSongUrl: string): string | null {
+	for (let i = 0; i < releases.length; i++) {
+		const release = releases[i];
+		for (let j = 0; j < release.songs.length; j++) {
+			const song = release.songs[j];
 			if (song.file == currentSongUrl) {
 				const order = j + 1
-				if (order >= album.songs.length) {
-					return album.songs[0].file
+				if (order >= release.songs.length) {
+					return release.songs[0].file
 				}
-				return album.songs[order].file
+				return release.songs[order].file
 			}
 		}
 	}

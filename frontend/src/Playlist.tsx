@@ -1,21 +1,21 @@
-import type { Album } from './client';
+import type { Release } from './client';
 import './Playlist.css'
 
 interface PlaylistProps {
 	setCurrentSongUrl: (url: string) => void;
 	highLightedSong: string | null;
-	album: Album;
+	release: Release;
 }
-const Playlist: React.FC<PlaylistProps> = ({ album, setCurrentSongUrl, highLightedSong }) => {
+const Playlist: React.FC<PlaylistProps> = ({ release: release, setCurrentSongUrl, highLightedSong }) => {
 	return (
 		<div className='playlist'>
-			{!album || !album.songs || album.songs.length === 0 ? (
+			{!release || !release.songs || release.songs.length === 0 ? (
 				<p>No songs found.</p>
 			) : (
 				<div style={{ margin: '10px' }}>
 					<div className='album'>
-						<img src={album.cover} width="200" height="200" className='rad-shadow albumCoverImg' />
-						<h1 style={{ marginLeft: '60px', marginTop: '60px', color: 'var(--text1)' }}>{album?.name}</h1>
+						<img src={release.cover} width="200" height="200" className='rad-shadow albumCoverImg' />
+						<h1 style={{ marginLeft: '60px', marginTop: '60px', color: 'var(--text1)' }}>{release?.name}</h1>
 					</div>
 					<table style={{ width: '100%', borderCollapse: 'collapse', borderSpacing: '0 10px', marginTop: '30px' }}>
 						<thead style={{ borderBottom: '2px solid var(--surface2)' }}>
@@ -25,7 +25,7 @@ const Playlist: React.FC<PlaylistProps> = ({ album, setCurrentSongUrl, highLight
 							</tr>
 						</thead>
 						<tbody>
-							{album.songs.map(song => (
+							{release.songs.map(song => (
 								<tr onClick={() => setCurrentSongUrl(song.file)} style={{ cursor: 'pointer' }}>
 									<td key={song.file} style={{ textAlign: 'left', color: 'var(--text1)' }}>
 										{highLightedSong != '' && song.file == highLightedSong ? (

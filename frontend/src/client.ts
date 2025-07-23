@@ -6,7 +6,7 @@ export type Song = {
 	duration: number;
 }
 
-export type Album = {
+export type Release = {
 	name: string;
 	cover: string;
 	releaseDate: string;
@@ -28,13 +28,13 @@ export class Client {
 		return response.data
 	}
 
-	async getAlbumsByArtist(artistName: string): Promise<Album[]> {
-		const response = await axios.get<Album[]>('/api/album/byArtist/' + artistName)
+	async getReleasesByArtist(artistName: string): Promise<Release[]> {
+		const response = await axios.get<Release[]>('/api/release/byArtist/' + artistName)
 		return response.data
 	}
 
-	async getMostRecentAlbum(): Promise<Album> {
-		const resp = await axios.get<Album>('/api/album/mostRecent')
+	async getMostRecentRelease(): Promise<Release> {
+		const resp = await axios.get<Release>('/api/release/mostRecent')
 		return resp.data
 	}
 }

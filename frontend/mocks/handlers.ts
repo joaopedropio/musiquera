@@ -6,7 +6,7 @@ type Song = {
 	duration: number;
 }
 
-type Album = {
+type Release = {
 	name: string;
 	artist: string;
 	releaseDate: string;
@@ -32,8 +32,8 @@ export const handlers = [
 		return HttpResponse.json([a, b, c])
 	}),
 
-	http.get('/api/album/byArtist/:artistName', () => {
-		let a: Album = {
+	http.get('/api/release/byArtist/:artistName', () => {
+		let a: Release = {
 			name: 'Master of Puppets',
 			artist: 'Metallica',
 			releaseDate: '1986-03-03',
@@ -48,8 +48,8 @@ export const handlers = [
 		return HttpResponse.json([a])
 	}),
 
-	http.get('/api/album/mostRecent', () => {
-		let a: Album = {
+	http.get('/api/release/mostRecent', () => {
+		let a: Release = {
 			name: 'Master of Puppets',
 			artist: 'Metallica',
 			releaseDate: '1986-03-03',

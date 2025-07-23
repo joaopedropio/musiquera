@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type fullAlbum struct {
+type fullRelease struct {
 	id        uuid.UUID
 	name      string
 	cover     string
@@ -15,8 +15,8 @@ type fullAlbum struct {
 	createdAt time.Time
 }
 
-func NewFullAlbum(id uuid.UUID, name string, cover string, release Date, artist Artist, songs []Song, createdAt time.Time) FullAlbum {
-	return &fullAlbum{
+func NewFullRelease(id uuid.UUID, name string, cover string, release Date, artist Artist, songs []Song, createdAt time.Time) FullRelease {
+	return &fullRelease{
 		id:        id,
 		name:      name,
 		cover:     cover,
@@ -27,7 +27,7 @@ func NewFullAlbum(id uuid.UUID, name string, cover string, release Date, artist 
 	}
 }
 
-type FullAlbum interface {
+type FullRelease interface {
 	ID() uuid.UUID
 	Name() string
 	Cover() string
@@ -37,29 +37,29 @@ type FullAlbum interface {
 	CreatedAt() time.Time
 }
 
-func (a *fullAlbum) ID() uuid.UUID {
+func (a *fullRelease) ID() uuid.UUID {
 	return a.id
 }
 
-func (a *fullAlbum) Name() string {
+func (a *fullRelease) Name() string {
 	return a.name
 }
 
-func (a *fullAlbum) Cover() string {
+func (a *fullRelease) Cover() string {
 	return a.cover
 }
-func (a *fullAlbum) ReleaseDate() Date {
+func (a *fullRelease) ReleaseDate() Date {
 	return a.release
 }
 
-func (a *fullAlbum) Artist() Artist {
+func (a *fullRelease) Artist() Artist {
 	return a.artist
 }
 
-func (a *fullAlbum) Songs() []Song {
+func (a *fullRelease) Songs() []Song {
 	return a.songs
 }
 
-func (a *fullAlbum) CreatedAt() time.Time {
+func (a *fullRelease) CreatedAt() time.Time {
 	return a.createdAt
 }

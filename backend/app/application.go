@@ -81,14 +81,14 @@ func (a *application) feed() error {
 		domain.NewSong("Rivo - Last Night", "", "/media/kream/liquid_lab_vol_12/Rivo___Last_Night/manifest.mpd", time.Minute*5),
 	}
 
-	_, err := a.repo.AddAlbum(
+	_, err := a.repo.AddRelease(
 		"Liquid Lab Vol 12",
 		"/media/kream/liquid_lab_vol_12/liquid_lab_vol_12_cover.jpg",
 		domain.NewDate(2025, 7, 5),
 		domain.NewArtist("Kream", "/media/kream/kream_profile_cover.jpg"),
 		liquidLabVol12)
 	if err != nil {
-		return fmt.Errorf("unable to add album: %w", err)
+		return fmt.Errorf("unable to add release: %w", err)
 	}
 
 	gatesOfMetalFriedChickenOfDeath := []domain.Song{
@@ -107,14 +107,14 @@ func (a *application) feed() error {
 		domain.NewSong("The God Master", "", "/media/massacration/gates_of_metal_fried_chicken_of_death/Massacration___The_God_Master__3WQqnb0jqpM_/manifest.mpd", time.Minute*5),
 	}
 
-	_, err = a.repo.AddAlbum(
+	_, err = a.repo.AddRelease(
 		"Gates of Metal Fried Chicken of Death",
 		"/media/massacration/gates_of_metal_fried_chicken_of_death/gates_of_metal_fried_chicken_of_death.jpg",
 		domain.NewDate(2008, 3, 7),
 		domain.NewArtist("Massacration", "/media/massacration/massacration_profile_cover.webp"),
 		gatesOfMetalFriedChickenOfDeath)
 	if err != nil {
-		return fmt.Errorf("unable to add album: %w", err)
+		return fmt.Errorf("unable to add release: %w", err)
 	}
 
 	theOphidianTrek := []domain.Song{
@@ -135,14 +135,14 @@ func (a *application) feed() error {
 		domain.NewSong("The Last Vigil", "", "/media/meshuggah/the_ophidian_trek/The_Last_Vigil__Live___FDWRJQuINnk_/manifest.mpd", time.Minute*5),
 	}
 
-	_, err = a.repo.AddAlbum(
+	_, err = a.repo.AddRelease(
 		"The Ophidian Trek (Live)",
 		"/media/meshuggah/the_ophidian_trek/ophidian_trek_cover.jpg",
 		domain.NewDate(2014, 9, 29),
 		domain.NewArtist("Meshuggah", "/media/meshuggah/meshuggah_profile_cover.jpg"),
 		theOphidianTrek)
 	if err != nil {
-		return fmt.Errorf("unable to add album: %w", err)
+		return fmt.Errorf("unable to add release: %w", err)
 	}
 
 	obzen := []domain.Song{
@@ -156,14 +156,14 @@ func (a *application) feed() error {
 		domain.NewSong("Pravus", "", "/media/meshuggah/obzen/Pravus__6KJ2RCm_bcs_/manifest.mpd", time.Minute*5),
 		domain.NewSong("This_Spiteful_Snake", "", "/media/meshuggah/obzen/This_Spiteful_Snake__cjjOW5X8nIw_/manifest.mpd", time.Minute*5),
 	}
-	_, err = a.repo.AddAlbum(
+	_, err = a.repo.AddRelease(
 		"Obzen",
 		"/media/meshuggah/obzen/obsen_cover.jpg",
 		domain.NewDate(2008, 3, 7),
 		domain.NewArtist("Meshuggah", "/media/meshuggah/meshuggah_profile_cover.jpg"),
 		obzen)
 	if err != nil {
-		return fmt.Errorf("unable to add album: %w", err)
+		return fmt.Errorf("unable to add release: %w", err)
 	}
 
 	nothingRemastered := []domain.Song{
@@ -178,14 +178,14 @@ func (a *application) feed() error {
 		domain.NewSong("Stengah", "", "/media/meshuggah/nothing_remastered/Stengah__Remastered_2006___ntISKKjf0gk_/manifest.mpd", time.Minute*5),
 		domain.NewSong("Straws Pulled at Random", "", "/media/meshuggah/nothing_remastered/Straws_Pulled_at_Random__Remastered_2006___xA_qx8ht2j0_/manifest.mpd", time.Minute*5),
 	}
-	_, err = a.repo.AddAlbum(
+	_, err = a.repo.AddRelease(
 		"Nothing (Remastered 2006)",
 		"/media/meshuggah/nothing_remastered/nothing_cover.jpg",
 		domain.NewDate(2006, 10, 31),
 		domain.NewArtist("Meshuggah", "/media/meshuggah/meshuggah_profile_cover.jpg"),
 		nothingRemastered)
 	if err != nil {
-		return fmt.Errorf("unable to add album: %w", err)
+		return fmt.Errorf("unable to add release: %w", err)
 	}
 
 	ridingTheLigthningSongs := []domain.Song{
@@ -199,14 +199,14 @@ func (a *application) feed() error {
 		domain.NewSong("Trapped Under Ice", "", "/media/metallica/riding_the_lightning/Trapped_Under_Ice__Studio_Version___6mLDoLWJKZw_/manifest.mpd", time.Minute*5),
 	}
 
-	_, err = a.repo.AddAlbum(
+	_, err = a.repo.AddRelease(
 		"Riding the Lightning",
 		"/media/metallica/riding_the_lightning/riding_the_lightning_cover.jpg",
 		domain.NewDate(1984, 7, 27),
 		domain.NewArtist("Metallica", "/media/metallica/metallica_profile_cover.jpg"),
 		ridingTheLigthningSongs)
 	if err != nil {
-		return fmt.Errorf("unable to add album: %w", err)
+		return fmt.Errorf("unable to add release: %w", err)
 	}
 
 	masterOfPuppetsSongs := []domain.Song{
@@ -220,15 +220,15 @@ func (a *application) feed() error {
 		domain.NewSong("Welcome Home (Sanitarium)", "", "/media/metallica/master_of_puppets/Welcome_Home__Sanitarium___Remastered___G_868UwoJvM_/manifest.mpd", time.Minute*5),
 	}
 
-	id, err := a.repo.AddAlbum(
+	id, err := a.repo.AddRelease(
 		"Master of Puppets",
 		"/media/metallica/master_of_puppets/master_of_puppets_cover.jpg",
 		domain.NewDate(1986, 3, 3),
 		domain.NewArtist("Metallica", "/media/metallica/metallica_profile_cover.jpg"),
 		masterOfPuppetsSongs)
 	if err != nil {
-		return fmt.Errorf("unable to add album: %w", err)
+		return fmt.Errorf("unable to add release: %w", err)
 	}
-	fmt.Println("albumID " + id.String())
+	fmt.Println("releaseID " + id.String())
 	return nil
 }

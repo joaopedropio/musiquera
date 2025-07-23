@@ -10,32 +10,32 @@ import (
 )
 
 type repo struct {
-	albums []domain.FullAlbum
+	releases []domain.FullRelease
 }
 
 func (r *repo) GetArtists() ([]domain.Artist, error) {
 	var artists []domain.Artist
-	for _, album := range r.albums {
-		artists = append(artists, album.Artist())
+	for _, release := range r.releases {
+		artists = append(artists, release.Artist())
 	}
 	return UniqueBy(artists, func(a domain.Artist) string {
 		return a.Name()
 	}), nil
 }
 
-func (r *repo) GetAlbumsByArtist(artistName string) ([]domain.FullAlbum, error) {
-	var albums []domain.FullAlbum
-	for _, album := range r.albums {
-		if album.Artist().Name() == artistName {
-			albums = append(albums, album)
+func (r *repo) GetReleasesByArtist(artistName string) ([]domain.FullRelease, error) {
+	var releases []domain.FullRelease
+	for _, release := range r.releases {
+		if release.Artist().Name() == artistName {
+			releases = append(releases, release)
 		}
 	}
-	return albums, nil
+	return releases, nil
 }
 
-func (r *repo) AddAlbum(name string, cover string, release domain.Date, artist domain.Artist, songs []domain.Song) (uuid.UUID, error) {
+func (r *repo) AddRelease(name string, cover string, release domain.Date, artist domain.Artist, songs []domain.Song) (uuid.UUID, error) {
 	id := uuid.New()
-	a := domain.NewFullAlbum(
+	a := domain.NewFullRelease(
 		id,
 		name,
 		cover,
@@ -44,41 +44,46 @@ func (r *repo) AddAlbum(name string, cover string, release domain.Date, artist d
 		songs,
 		time.Now(),
 	)
-	r.albums = append(r.albums, a)
+	r.releases = append(r.releases, a)
 	return id, nil
 }
 
-func (r *repo) GetAlbum(id uuid.UUID) (domain.Album, error) {
-	fullAlbum, err := r.GetFullAlbum(id)
+func (r *repo) GetRelease(id uuid.UUID) (domain.Release, error) {
+	fullRelease, err := r.GetFullRelease(id)
 	if err != nil {
-		return nil, fmt.Errorf("unable to get full album: %w", err)
+		return nil, fmt.Errorf("unable to get full release: %w", err)
 	}
-	return domain.NewAlbum(fullAlbum.Name(), fullAlbum.ReleaseDate()), nil
+	return domain.NewRelease(
+		fullRelease.Name(),
+		fullRelease.ReleaseDate(),
+		fullRelease.Cover(),
+		fullRelease.Artist(),
+	), nil
 }
 
-func (r *repo) GetFullAlbum(id uuid.UUID) (domain.FullAlbum, error) {
-	for _, a := range r.albums {
+func (r *repo) GetFullRelease(id uuid.UUID) (domain.FullRelease, error) {
+	for _, a := range r.releases {
 		if a.ID().String() == id.String() {
 			//return a.name, a.release, a.artist, a.songs, nil
 			return a, nil
 		}
 	}
-	return nil, fmt.Errorf("unable to find album with id %s", id.String())
+	return nil, fmt.Errorf("unable to find release with id %s", id.String())
 }
 
-func (r *repo) GetMostRecentAlbum() (domain.FullAlbum, error) {
-	var a domain.FullAlbum
-	for _, album := range r.albums {
+func (r *repo) GetMostRecentRelease() (domain.FullRelease, error) {
+	var a domain.FullRelease
+	for _, release := range r.releases {
 		if a == nil {
-			a = album
+			a = release
 			continue
 		}
-		if album.CreatedAt().After(a.CreatedAt()) {
-			a = album
+		if release.CreatedAt().After(a.CreatedAt()) {
+			a = release
 		}
 	}
 	if a == nil {
-		return nil, fmt.Errorf("no album on database")
+		return nil, fmt.Errorf("no release on database")
 	}
 	return a, nil
 }

@@ -10,16 +10,16 @@ import (
 	"github.com/joaopedropio/musiquera/app/infra"
 )
 
-func TestRepo_ShouldAddAlbum_WhenAlbumIsAdded(t *testing.T) {
+func TestRepo_ShouldAddRelease_WhenReleaseIsAdded(t *testing.T) {
 	// Arrange
 	repo := infra.NewRepo()
-	name := "album_name"
+	name := "release_name"
 	artist := domain.NewArtist("artist_name", "profile_photo.png")
 	release := domain.NewDate(2000, 1, 1)
 	songs := []domain.Song{}
 
 	// Act
-	id, err := repo.AddAlbum(name, "", release, artist, songs)
+	id, err := repo.AddRelease(name, "", release, artist, songs)
 
 	// Assert
 	assert.NoError(t, err)

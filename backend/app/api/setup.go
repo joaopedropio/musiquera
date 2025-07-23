@@ -6,7 +6,7 @@ import (
 )
 
 type Controller struct {
-	Album    *controller.AlbumController
+	Release    *controller.ReleaseController
 	Artist *controller.ArtistController
 	PingPong *controller.PingPongController
 	StaticFiles *controller.StaticController
@@ -14,12 +14,12 @@ type Controller struct {
 
 func SetupControllers(a app.Application) Controller {
 	artistController := controller.NewArtistController(a)
-	albumController := controller.NewAlbumController(a)
+	releaseController := controller.NewReleaseController(a)
 	pingpingController := controller.NewPingPong()
 	staticFilesController := controller.NewStaticController(a.Environment().WebStaticFilesDir)
 	return Controller{
 		Artist: artistController,
-		Album:    albumController,
+		Release:    releaseController,
 		PingPong: pingpingController,
 		StaticFiles: staticFilesController,
 	}
