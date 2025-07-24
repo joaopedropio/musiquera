@@ -42,6 +42,28 @@ func NewApplication() (Application, error) {
 
 func (a *application) feed() error {
 
+	parallelProcessing := []domain.Track{
+		domain.NewTrack("Logic Gatekeeper", "", "/media/danimal_cannon_and_zef/parallel_processing/Danimal_Cannon___Zef___Logic_Gatekeeper__uLtRVm_tkxI_/manifest.mpd", time.Minute*5),
+		domain.NewTrack("Legacy", "", "/media/danimal_cannon_and_zef/parallel_processing/Danimal_Cannon___Zef___Legacy__pD3JoYx9hfw_/manifest.mpd", time.Minute*5),
+		domain.NewTrack("Chronos", "", "/media/danimal_cannon_and_zef/parallel_processing/Danimal_Cannon___Zef___Chronos__eLG_K7X2BaE_/manifest.mpd", time.Minute*5),
+		domain.NewTrack("Rhapsody", "", "/media/danimal_cannon_and_zef/parallel_processing/Danimal_Cannon___Zef___Rhapsody__5MSeUK93_Sk_/manifest.mpd", time.Minute*5),
+		domain.NewTrack("Glitch", "", "/media/danimal_cannon_and_zef/parallel_processing/Danimal_Cannon___Zef___Glitch__upX7bibwJBw_/manifest.mpd", time.Minute*5),
+		domain.NewTrack("The Lunar Whale", "", "/media/danimal_cannon_and_zef/parallel_processing/Danimal_Cannon___Zef___The_Lunar_Whale__p1XpTZPILXM_/manifest.mpd", time.Minute*5),
+		domain.NewTrack("Corrupted", "", "/media/danimal_cannon_and_zef/parallel_processing/Danimal_Cannon___Zef___Corrupted__6j_eb_8huQc_/manifest.mpd", time.Minute*5),
+		domain.NewTrack("Parallel Processing", "", "/media/danimal_cannon_and_zef/parallel_processing/Danimal_Cannon___Zef___Parallel_Processing__1Fuch5gfUq0_/manifest.mpd", time.Minute*5),
+	}
+
+	_, err := a.repo.AddRelease(
+		"Parallel Processing",
+		domain.ReleaseTypeAlbum,
+		"/media/danimal_cannon_and_zef/parallel_processing/parallel_processing_cover.jpg",
+		domain.NewDate(2013, 1, 15),
+		domain.NewArtist("Danimal Cannon", "/media/danimal_cannon_and_zef/danimal_cannon_profile.jpg"),
+		parallelProcessing)
+	if err != nil {
+		return fmt.Errorf("unable to add release: %w", err)
+	}
+
 	liquidLabVol12 := []domain.Track{
 		domain.NewTrack("KREAM - Liquid Lab Intro", "", "/media/kream/liquid_lab_vol_12/KREAM___Liquid_Lab_Intro/manifest.mpd", time.Minute*5),
 		domain.NewTrack("Dyzen - She Likes", "", "/media/kream/liquid_lab_vol_12/Dyzen___She_Likes/manifest.mpd", time.Minute*5),
@@ -81,7 +103,7 @@ func (a *application) feed() error {
 		domain.NewTrack("Rivo - Last Night", "", "/media/kream/liquid_lab_vol_12/Rivo___Last_Night/manifest.mpd", time.Minute*5),
 	}
 
-	_, err := a.repo.AddRelease(
+	_, err = a.repo.AddRelease(
 		"Liquid Lab Vol 12",
 		domain.ReleaseTypeLiveSet,
 		"/media/kream/liquid_lab_vol_12/liquid_lab_vol_12_cover.jpg",
