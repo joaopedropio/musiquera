@@ -1,17 +1,22 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { MediaPlayer } from 'dashjs'
+import { MediaPlayer, } from 'dashjs'
+import type { MediaPlayerClass } from 'dashjs';
 import './DashPlayer.css'
 
 interface DashPlayerProps {
 	src: string;
-	onTrackEnd: () => void;
-	autoplay?: boolean;
+	getNextSrc: () => string | null;
+	autoplay: boolean;
 	onNextTrack: () => void;
 	onPreviousTrack: () => void;
 }
 
-const DashPlayer: React.FC<DashPlayerProps> = ({ src, onTrackEnd: onTrackEnd, autoplay, onNextTrack: onNextTrack, onPreviousTrack: onPreviousTrack }) => {
+const DashPlayer: React.FC<DashPlayerProps> = ({ src, getNextSrc, autoplay, onNextTrack, onPreviousTrack }) => {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
+	const playerRef = useRef<MediaPlayerClass | null>(null);
+	const playerNextRef = useRef<MediaPlayerClass | null>(null);
+	const hasPreloadedNextRef = useRef(false);
+
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [volume, setVolume] = useState(1); // Volume range: 0 to 1
 	const [currentTime, setCurrentTime] = useState(0);
@@ -59,17 +64,40 @@ const DashPlayer: React.FC<DashPlayerProps> = ({ src, onTrackEnd: onTrackEnd, au
 		setCurrentTime(newTime);
 	};
 
+	const onTrackEnd = () => {
+		if (playerNextRef.current && audioRef.current) {
+			playerRef.current?.reset()
+			playerRef.current = playerNextRef.current;
+			playerNextRef.current = null;
+			hasPreloadedNextRef.current = false;
+
+			playerRef.current?.play()
+
+		}
+	}
+
 	useEffect(() => {
 		if (audioRef.current && src) {
 			const audio = audioRef.current;
 			const player = MediaPlayer().create();
 			player.initialize(audioRef.current, src, autoplay);
-			const updateTime = () => setCurrentTime(audio.currentTime);
+			playerRef.current = player;
+			const updateTime = () => {
+				if (audio.duration - audio.currentTime < 5 && !playerNextRef.current) {
+					const nextSrc = getNextSrc()
+					if (nextSrc != null) {
+						const playerNext = MediaPlayer().create()
+						playerNext.initialize(audio, nextSrc, false)
+						playerNextRef.current = playerNext
+						hasPreloadedNextRef.current = true;
+					}
+				}
+				setCurrentTime(audio.currentTime);
+			}
 			const setAudioDuration = () => setDuration(audio.duration);
 
 			audio.addEventListener('timeupdate', updateTime);
 			audio.addEventListener('loadedmetadata', setAudioDuration);
-
 			audio.addEventListener('play', onPlay);
 			audio.addEventListener('pause', onPause);
 
@@ -86,9 +114,10 @@ const DashPlayer: React.FC<DashPlayerProps> = ({ src, onTrackEnd: onTrackEnd, au
 	return (
 		<div className='dashPlayer'>
 			<audio ref={audioRef} preload="auto" onEnded={onTrackEnd} />
+			{/*<audio ref={audioRefNext.current ? audioRefNext : audioRef} preload="auto" onEnded={onTrackEnd} />*/}
 			<div className='player-controls'>
 				<div>
-					<button onClick={() => onPreviousTrack()} className="icon-button" title="Previous">
+					<button onClick={onPreviousTrack} className="icon-button" title="Previous">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
 							<path d="M6 12l10 7V5zM4 5h2v14H4z" />
 						</svg>
@@ -106,7 +135,7 @@ const DashPlayer: React.FC<DashPlayerProps> = ({ src, onTrackEnd: onTrackEnd, au
 							</svg>
 						</button>
 					)}
-					<button onClick={() => onNextTrack()} className="icon-button" title="Next">
+					<button onClick={onNextTrack} className="icon-button" title="Next">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
 							<path d="M18 12L8 5v14zM20 5h-2v14h2z" />
 						</svg>

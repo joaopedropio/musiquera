@@ -15,6 +15,7 @@ function App() {
 
 	const client = new Client()
 
+	/*
 	const onTrackEnd = () => {
 		if (currentTrackUrl == null) {
 			return
@@ -37,7 +38,7 @@ function App() {
 		}
 		return
 	}
-
+	*/
 	const onNextTrackButtonClick = () => {
 		if (currentTrackUrl == null) {
 			return
@@ -114,7 +115,7 @@ function App() {
 				{currentTrackUrl ? (
 					<DashPlayer
 						src={currentTrackUrl}
-						onTrackEnd={onTrackEnd}
+						getNextSrc={() => getNextTrack(releases, currentTrackUrl)}
 						onNextTrack={onNextTrackButtonClick}
 						onPreviousTrack={onPreviousTrackButtonClick}
 						autoplay
@@ -122,13 +123,14 @@ function App() {
 				) : (
 					<DashPlayer
 						src=''
-						onTrackEnd={onTrackEnd}
-						onPreviousTrack={onPreviousTrackButtonClick}
+						getNextSrc={() => null}
 						onNextTrack={onNextTrackButtonClick}
+						onPreviousTrack={onPreviousTrackButtonClick}
+						autoplay={false}
 					/>
 				)}
 			</footer>
-		</div>
+		</div >
 	)
 }
 
