@@ -26,17 +26,23 @@ type Artist struct {
 	ProfileCoverPath string `json:"profileCoverPath"`
 }
 
+type Segment struct {
+	Name     string `json:"name"`
+	Position int64  `json:"position"`
+}
+
 type Track struct {
-	Name string `json:"name"`
-	File string `json:"file"`
+	Name     string     `json:"name"`
+	File     string     `json:"file"`
+	Segments []*Segment `json:"segments"`
 }
 
 type ReleaseResponse struct {
-	Name        string  `json:"name"`
-	Artist      Artist  `json:"artist"`
-	Cover       string  `json:"cover"`
-	ReleaseDate string  `json:"releaseDate"`
-	Tracks       []*Track `json:"tracks"`
+	Name        string   `json:"name"`
+	Artist      Artist   `json:"artist"`
+	Cover       string   `json:"cover"`
+	ReleaseDate string   `json:"releaseDate"`
+	Tracks      []*Track `json:"tracks"`
 }
 
 func (c *ReleaseController) GetReleasesByArtist(w http.ResponseWriter, r *http.Request) {
@@ -52,11 +58,20 @@ func (c *ReleaseController) GetReleasesByArtist(w http.ResponseWriter, r *http.R
 	for _, release := range fullReleases {
 		var tracks []*Track
 		for _, track := range release.Tracks() {
-			s := &Track{
-				Name: track.Name(),
-				File: track.File(),
+			var segments []*Segment
+			for _, segment := range track.Segments() {
+				s := &Segment{
+					Name:     segment.Name(),
+					Position: segment.Position(),
+				}
+				segments = append(segments, s)
 			}
-			tracks = append(tracks, s)
+			t := &Track{
+				Name:     track.Name(),
+				File:     track.File(),
+				Segments: segments,
+			}
+			tracks = append(tracks, t)
 		}
 		releaseResponse := ReleaseResponse{
 			Name:  release.Name(),
@@ -66,7 +81,7 @@ func (c *ReleaseController) GetReleasesByArtist(w http.ResponseWriter, r *http.R
 				release.Artist().ProfileCoverPhotoPath(),
 			},
 			ReleaseDate: release.ReleaseDate().String(),
-			Tracks:       tracks,
+			Tracks:      tracks,
 		}
 		releaseResponses = append(releaseResponses, releaseResponse)
 	}
@@ -100,7 +115,7 @@ func (c *ReleaseController) GetMostRecent(w http.ResponseWriter, r *http.Request
 			fullRelease.Artist().ProfileCoverPhotoPath(),
 		},
 		ReleaseDate: fullRelease.ReleaseDate().String(),
-		Tracks:       tracks,
+		Tracks:      tracks,
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
