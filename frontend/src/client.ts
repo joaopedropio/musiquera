@@ -5,10 +5,16 @@ import axios from 'axios'
 
 type ReleaseType = string
 
+export type Segment = {
+	name: string;
+	position: number;
+}
+
 export type Track = {
 	name: string;
 	file: string;
 	duration: number;
+	segments: Segment[];
 }
 
 export type Release = {

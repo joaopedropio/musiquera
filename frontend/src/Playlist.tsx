@@ -24,20 +24,38 @@ const Playlist: React.FC<PlaylistProps> = ({ release: release, setCurrentTrackUr
 								<th style={{ textAlign: 'right' }}>Duration</th>
 							</tr>
 						</thead>
-						<tbody>
-							{release.tracks.map(track => (
-								<tr onClick={() => setCurrentTrackUrl(track.file)} style={{ cursor: 'pointer' }}>
-									<td key={track.file} style={{ textAlign: 'left', color: 'var(--text1)' }}>
-										{highLightedTrack != '' && track.file == highLightedTrack ? (
-											<strong className='current-song'>{track.name}</strong>
-										) : (
-											<strong>{track.name}</strong>
-										)}
-									</td>
-									<td style={{ textAlign: 'right', color: 'var(--text2)' }}>{formatTime(track.duration)}</td>
-								</tr>
-							))}
-						</tbody>
+						{
+							release.type == 'liveSet' ? (
+								<tbody>
+									{release.tracks[0].segments.map(segment => (
+										<tr onClick={() => setCurrentTrackUrl(segment.name)} style={{ cursor: 'pointer' }}>
+											<td key={segment.name} style={{ textAlign: 'left', color: 'var(--text1)' }}>
+												{highLightedTrack != '' && segment.name == highLightedTrack ? (
+													<strong className='current-song'>{segment.name}</strong>
+												) : (
+													<strong>{segment.name}</strong>
+												)}
+											</td>
+											<td style={{ textAlign: 'right', color: 'var(--text2)' }}>{formatTime(segment.position)}</td>
+										</tr>
+									))}
+								</tbody>
+							) : (
+								<tbody>
+									{release.tracks.map(track => (
+										<tr onClick={() => setCurrentTrackUrl(track.file)} style={{ cursor: 'pointer' }}>
+											<td key={track.file} style={{ textAlign: 'left', color: 'var(--text1)' }}>
+												{highLightedTrack != '' && track.file == highLightedTrack ? (
+													<strong className='current-song'>{track.name}</strong>
+												) : (
+													<strong>{track.name}</strong>
+												)}
+											</td>
+											<td style={{ textAlign: 'right', color: 'var(--text2)' }}>{formatTime(track.duration)}</td>
+										</tr>
+									))}
+								</tbody>
+							)}
 					</table>
 				</div>
 			)}
