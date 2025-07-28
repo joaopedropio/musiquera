@@ -1,11 +1,8 @@
- .playlist {
- }
-
  .albumCoverImg {
 	border-radius: 1rem;
  }
 
- .album {
+ .albumHeader {
 	 display: flex;
 	 justify-content: center;
  }

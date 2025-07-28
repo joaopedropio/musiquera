@@ -2,14 +2,18 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import './DashPlayer'
 import DashPlayer from './DashPlayer'
-import Playlist from './Playlist'
+import DashPlayerLiveSet from './DashPlayerLiveSet'
+import Album from './Album'
 import ArtistComponent from './Artist'
 import { Client } from './client'
-import type { Artist, Release } from './client'
+import type { Segment, Artist, Release } from './client'
+import LiveSet from './LiveSet'
 
 function App() {
 	const [currentTrackUrl, setCurrentTrackUrl] = useState<string | null>(null);
 	const [currentArtist, setCurrentArtist] = useState<string | null>(null)
+	const [currentSegment, setCurrentSegment] = useState<Segment | null>(null)
+	const [currentReleaseType, setCurrentReleaseType] = useState<string | null>(null)
 	const [artists, setArtists] = useState<Artist[]>([])
 	const [releases, setReleases] = useState<Release[]>([])
 
@@ -38,6 +42,20 @@ function App() {
 		return
 	}
 
+	const onNextSegmentButtonClick = () => {
+		if (currentTrackUrl == null) {
+			return
+		}
+		if (currentSegment == null) {
+			return
+		}
+		const nextSegment = getNextSegment(releases, currentTrackUrl, currentSegment)
+		if (nextSegment == null) {
+			return
+		}
+		setCurrentSegment(nextSegment)
+	}
+
 	const onNextTrackButtonClick = () => {
 		if (currentTrackUrl == null) {
 			return
@@ -48,6 +66,20 @@ function App() {
 		}
 		setCurrentTrackUrl(nextTrack)
 	}
+	const onPreviousSegmentButtonClick = () => {
+		if (currentTrackUrl == null) {
+			return
+		}
+		if (currentSegment == null) {
+			return
+		}
+	 	const previousSegment = getPreviousSegment(releases, currentTrackUrl, currentSegment)
+		if (previousSegment == null) {
+			return
+		}
+		setCurrentSegment(previousSegment)
+	}
+
 
 	const onPreviousTrackButtonClick = () => {
 		if (currentTrackUrl == null) {
@@ -91,33 +123,38 @@ function App() {
 
 	return (
 		<div className='app-container'>
-			{/*
-			<nav className='navbar'>
-				<h1>Navbar</h1>
-			</nav>
-			*/}
 			<main className='content'>
 				<div className='list-container rad-shadow'>
 					<ArtistComponent artists={artists} setCurrentArtist={setCurrentArtist} currentArtist={currentArtist} />
 				</div>
 				<div className='list-container rad-shadow'>
 					{releases.length > 0 ? (
-						releases.map((release) => (
-							<Playlist release={release} setCurrentTrackUrl={setCurrentTrackUrl} highLightedTrack={currentTrackUrl} />
-						))
-					) : (
+						releases.map((release) => 
+							release.type === 'album' ? (
+							<Album release={release} setCurrentTrackUrl={setCurrentTrackUrl} highLightedTrack={currentTrackUrl} setCurrentReleaseType={setCurrentReleaseType}/>
+						): (
+							<LiveSet release={release} setCurrentTrackUrl={setCurrentTrackUrl} setCurrentSegment={setCurrentSegment} highLightedTrack={currentTrackUrl} setCurrentReleaseType={setCurrentReleaseType}/>
+						)
+					)) : (
 						<strong>Pick a artist</strong>
 					)}
 				</div>
 			</main>
 			<footer className='footer'>
-				{currentTrackUrl ? (
+				{currentTrackUrl && currentReleaseType === 'album' ? (
 					<DashPlayer
 						src={currentTrackUrl}
 						onTrackEnd={onTrackEnd}
 						onNextTrack={onNextTrackButtonClick}
 						onPreviousTrack={onPreviousTrackButtonClick}
 						autoplay
+					/>
+				) : currentTrackUrl && currentSegment && currentReleaseType === 'liveSet' ?(
+					<DashPlayerLiveSet
+						src={currentTrackUrl}
+						currentSegment={currentSegment}
+						onPreviousSegment={onPreviousSegmentButtonClick}
+						onNextSegment={onNextSegmentButtonClick}
 					/>
 				) : (
 					<DashPlayer
@@ -130,6 +167,48 @@ function App() {
 			</footer>
 		</div>
 	)
+}
+
+function getNextSegment(releases: Release[], currentTrackUrl: string, currentSegment: Segment): Segment| null {
+	for (let i = 0; i < releases.length; i++) {
+		const release = releases[i];
+		for (let j = 0; j < release.tracks.length; j++) {
+			const track = release.tracks[j];
+			if (track.file == currentTrackUrl) {
+				for (let k = 0; k < track.segments.length; k++) {
+					if (track.segments[k].name == currentSegment.name) {
+						const order = k + 1
+						if (order >= track.segments.length) {
+							return track.segments[0]
+						}
+						return track.segments[order]
+					}
+				}
+			}
+		}
+	}
+	return null
+}
+
+function getPreviousSegment(releases: Release[], currentTrackUrl: string, currentSegment: Segment): Segment| null {
+	for (let i = 0; i < releases.length; i++) {
+		const release = releases[i];
+		for (let j = 0; j < release.tracks.length; j++) {
+			const track = release.tracks[j];
+			if (track.file == currentTrackUrl) {
+				for (let k = 0; k < track.segments.length; k++) {
+					if (track.segments[k].name == currentSegment.name) {
+						const order = k - 1
+						if (order < 0) {
+							return track.segments[track.segments.length - 1]
+						}
+						return track.segments[order]
+					}
+				}
+			}
+		}
+	}
+	return null
 }
 
 function getPreviousTrack(releases: Release[], currentTrackUrl: string): string | null {
