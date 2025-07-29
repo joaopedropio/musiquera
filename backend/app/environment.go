@@ -8,6 +8,7 @@ import (
 
 type Environment struct {
 	WebStaticFilesDir string
+	JWTSecret         string
 }
 
 func GetEnvironmentVariables() Environment {
@@ -19,7 +20,12 @@ func GetEnvironmentVariables() Environment {
 	if staticFilesPath == "" {
 		panic("STATIC_FILES env var not set")
 	}
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		panic("JWT SECRET env var not set")
+	}
 	return Environment{
 		WebStaticFilesDir: staticFilesPath,
+		JWTSecret: jwtSecret,
 	}
 }

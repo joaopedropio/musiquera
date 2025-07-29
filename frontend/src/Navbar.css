@@ -1,0 +1,23 @@
+.nav {
+}
+
+ 
+.navbar {
+		display: flex;
+	justify-content: space-between;
+	flex-direction: row;
+
+	top: 0;
+	left: 0;
+	width: 96%;
+	background-color: var(--bg-light);
+	color: white;
+	padding: 1rem;
+	text-align: center;
+}
+
+.logoutButton {
+	margin-left: 20px;
+}
+
+

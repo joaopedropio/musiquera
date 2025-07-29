@@ -8,6 +8,7 @@ import ArtistComponent from './Artist'
 import { Client } from './client'
 import type { Segment, Artist, Release } from './client'
 import LiveSet from './LiveSet'
+import Navbar from './Navbar'
 
 function App() {
 	const [currentTrackUrl, setCurrentTrackUrl] = useState<string | null>(null);
@@ -73,7 +74,7 @@ function App() {
 		if (currentSegment == null) {
 			return
 		}
-	 	const previousSegment = getPreviousSegment(releases, currentTrackUrl, currentSegment)
+		const previousSegment = getPreviousSegment(releases, currentTrackUrl, currentSegment)
 		if (previousSegment == null) {
 			return
 		}
@@ -123,19 +124,20 @@ function App() {
 
 	return (
 		<div className='app-container'>
+			<Navbar />
 			<main className='content'>
 				<div className='list-container rad-shadow'>
 					<ArtistComponent artists={artists} setCurrentArtist={setCurrentArtist} currentArtist={currentArtist} />
 				</div>
 				<div className='list-container rad-shadow'>
 					{releases.length > 0 ? (
-						releases.map((release) => 
+						releases.map((release) =>
 							release.type === 'album' ? (
-							<Album release={release} setCurrentTrackUrl={setCurrentTrackUrl} highLightedTrack={currentTrackUrl} setCurrentReleaseType={setCurrentReleaseType}/>
-						): (
-							<LiveSet release={release} setCurrentTrackUrl={setCurrentTrackUrl} setCurrentSegment={setCurrentSegment} highLightedTrack={currentTrackUrl} setCurrentReleaseType={setCurrentReleaseType}/>
-						)
-					)) : (
+								<Album release={release} setCurrentTrackUrl={setCurrentTrackUrl} highLightedTrack={currentTrackUrl} setCurrentReleaseType={setCurrentReleaseType} />
+							) : (
+								<LiveSet release={release} setCurrentTrackUrl={setCurrentTrackUrl} setCurrentSegment={setCurrentSegment} highLightedTrack={currentTrackUrl} setCurrentReleaseType={setCurrentReleaseType} />
+							)
+						)) : (
 						<strong>Pick a artist</strong>
 					)}
 				</div>
@@ -149,7 +151,7 @@ function App() {
 						onPreviousTrack={onPreviousTrackButtonClick}
 						autoplay
 					/>
-				) : currentTrackUrl && currentSegment && currentReleaseType === 'liveSet' ?(
+				) : currentTrackUrl && currentSegment && currentReleaseType === 'liveSet' ? (
 					<DashPlayerLiveSet
 						src={currentTrackUrl}
 						currentSegment={currentSegment}
@@ -169,7 +171,7 @@ function App() {
 	)
 }
 
-function getNextSegment(releases: Release[], currentTrackUrl: string, currentSegment: Segment): Segment| null {
+function getNextSegment(releases: Release[], currentTrackUrl: string, currentSegment: Segment): Segment | null {
 	for (let i = 0; i < releases.length; i++) {
 		const release = releases[i];
 		for (let j = 0; j < release.tracks.length; j++) {
@@ -190,7 +192,7 @@ function getNextSegment(releases: Release[], currentTrackUrl: string, currentSeg
 	return null
 }
 
-function getPreviousSegment(releases: Release[], currentTrackUrl: string, currentSegment: Segment): Segment| null {
+function getPreviousSegment(releases: Release[], currentTrackUrl: string, currentSegment: Segment): Segment | null {
 	for (let i = 0; i < releases.length; i++) {
 		const release = releases[i];
 		for (let j = 0; j < release.tracks.length; j++) {

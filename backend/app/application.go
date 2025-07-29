@@ -10,13 +10,19 @@ import (
 )
 
 type Application interface {
+	LoginService() infra.LoginService
+	PasswordService() infra.PasswordService
 	Repo() domainrepo.Repo
 	Environment() Environment
+	UserRepo() infra.UserRepo
 }
 
 type application struct {
-	repo domainrepo.Repo
-	env  Environment
+	repo            domainrepo.Repo
+	env             Environment
+	passwordService infra.PasswordService
+	userRepo infra.UserRepo
+	loginService infra.LoginService
 }
 
 func (a *application) Environment() Environment {
@@ -27,12 +33,30 @@ func (a *application) Repo() domainrepo.Repo {
 	return a.repo
 }
 
+func (a *application) PasswordService() infra.PasswordService {
+	return a.passwordService
+}
+
+func (a *application) UserRepo() infra.UserRepo {
+	return a.userRepo
+}
+
+func (a *application) LoginService() infra.LoginService {
+	return a.loginService
+}
+
 func NewApplication() (Application, error) {
 	repo := infra.NewRepo()
 	env := GetEnvironmentVariables()
+	passwordService := infra.NewPasswordService(env.JWTSecret)
+	userRepo := infra.NewUserRepo()
+	loginService := infra.NewLoginService(passwordService, userRepo)
 	a := &application{
 		repo,
 		env,
+		passwordService,
+		userRepo,
+		loginService,
 	}
 	if err := a.feed(); err != nil {
 		return nil, fmt.Errorf("unable to feed: %w", err)
@@ -251,7 +275,7 @@ func (a *application) feed() error {
 		domain.NewTrack("Welcome Home (Sanitarium)", "", "/media/metallica/master_of_puppets/Welcome_Home__Sanitarium___Remastered___G_868UwoJvM_/manifest.mpd", time.Minute*5, nil),
 	}
 
-	id, err := a.repo.AddRelease(
+	_, err = a.repo.AddRelease(
 		"Master of Puppets",
 		domain.ReleaseTypeAlbum,
 		"/media/metallica/master_of_puppets/master_of_puppets_cover.jpg",
@@ -261,6 +285,5 @@ func (a *application) feed() error {
 	if err != nil {
 		return fmt.Errorf("unable to add release: %w", err)
 	}
-	fmt.Println("releaseID " + id.String())
 	return nil
 }
