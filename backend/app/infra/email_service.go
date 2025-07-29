@@ -18,14 +18,14 @@ type EmailService interface {
 
 func NewEmailService(client *http.Client, emailAPIToken string, fromAddress string) EmailService {
 	return &emailService{
-		client: client,
+		client:        client,
 		emailAPIToken: emailAPIToken,
 		fromAddress:   fromAddress,
 	}
 }
 
 type emailService struct {
-	client *http.Client
+	client        *http.Client
 	emailAPIToken string
 	fromAddress   string
 }
@@ -55,7 +55,11 @@ func (s *emailService) SendCreateAccountMFACode(mfaCode, toAddress string) error
 	if err != nil {
 		return fmt.Errorf("unable to create request: %w", err)
 	}
-	defer req.Body.Close()
+	defer func() {
+		if cerr := req.Body.Close(); err != nil {
+			err = fmt.Errorf("unable to close body: %w", cerr)
+		}
+	}()
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
