@@ -78,3 +78,25 @@ func (c *SecurityController) Logout(w http.ResponseWriter, r *http.Request) {
 	// Optional: Redirect to login or home
 	http.Redirect(w, r, "/loginPage", http.StatusSeeOther)
 }
+
+func (c *SecurityController) AuthCheck(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("jwt")
+	if err != nil {
+		fmt.Println("no token cookie found")
+		http.Error(w, "", http.StatusUnauthorized)
+		return
+	}
+	isLogged, err := c.a.LoginService().IsLogged(cookie.Value)
+	if err != nil {
+		fmt.Println(fmt.Errorf("unable to check if user is logged: %w", err).Error())
+		http.Error(w, "", http.StatusUnauthorized)
+		return
+	}
+
+	if !isLogged {
+		http.Error(w, "", http.StatusUnauthorized)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}

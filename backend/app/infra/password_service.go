@@ -115,13 +115,6 @@ func (s *passwordService) VerifyPassword(password, encodedHash string) (bool, er
 		return false, fmt.Errorf("unable to scanf m t p: %w", err)
 	}
 
-	fmt.Println("version: ", version)
-	fmt.Println("m: ", m)
-	fmt.Println("t: ", t)
-	fmt.Println("p: ", p)
-	fmt.Println("salt: ", parts[4])
-	fmt.Println("hash: ", parts[5])
-
 	salt, err = base64.RawStdEncoding.DecodeString(parts[4])
 	if err != nil {
 		return false, fmt.Errorf("unable to decode salt: %w", err)
@@ -133,7 +126,6 @@ func (s *passwordService) VerifyPassword(password, encodedHash string) (bool, er
 	}
 
 	computedHash := argon2.IDKey([]byte(password), salt, t, m, p, uint32(len(hash)))
-	fmt.Println("computed hash: " + string(computedHash))
 
 	if subtle.ConstantTimeCompare(hash, computedHash) == 1 {
 		return true, nil
