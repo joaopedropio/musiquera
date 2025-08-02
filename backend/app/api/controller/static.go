@@ -19,6 +19,10 @@ func NewStaticController(path string) *StaticController {
 
 func (c *StaticController) ServeStatic(w http.ResponseWriter, r *http.Request) {
 	requestPath := r.URL.Path
+	if strings.Contains(requestPath, "media") {
+		http.NotFound(w, r)
+		return
+	}
 	filePath := filepath.Join(c.path, requestPath)
 
 	// Prevent directory traversal
