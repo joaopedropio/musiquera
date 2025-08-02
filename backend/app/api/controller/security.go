@@ -38,7 +38,6 @@ func (c *SecurityController) Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "password can't be empty", http.StatusBadRequest)
 		return
 	}
-	fmt.Println("login info: " + loginInfo.Username + " " + loginInfo.Password)
 	token, err := c.a.LoginService().Login(loginInfo.Username, loginInfo.Password)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("unable to login: %s", err.Error()), http.StatusInternalServerError)

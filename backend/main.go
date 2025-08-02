@@ -1,30 +1,41 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"net/http"
+	"log"
 	"os"
-
-	"github.com/go-chi/chi/v5"
-
-	"github.com/joaopedropio/musiquera/app"
-	"github.com/joaopedropio/musiquera/app/api"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 func main() {
-	if err := runApi(); err != nil {
+	if err := runAPI(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
-func runApi() error {
-	r := chi.NewRouter()
-	a, err := app.NewApplication()
-	api.ConfigureAPI(r, a)
+func runAPI() error {
+	srv, err:= NewServer()
 	if err != nil {
-		return fmt.Errorf("unable to configure api")
+		return fmt.Errorf("unable to initialize server: %w", err)
 	}
-	port := ":8080"
-	fmt.Print("musiquera running on port ", port)
-	return http.ListenAndServe(port, r)
+	
+	go func() {
+		if err:= srv.Start(); err != nil {
+			log.Fatalf("server start failed: %v", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	log.Println("Signal received, initiating shutdown...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	return srv.Stop(ctx)
 }

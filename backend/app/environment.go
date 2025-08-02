@@ -9,6 +9,8 @@ import (
 type Environment struct {
 	WebStaticFilesDir string
 	JWTSecret         string
+	DatabaseDir       string
+	HttpPort          string
 }
 
 func GetEnvironmentVariables() Environment {
@@ -24,8 +26,26 @@ func GetEnvironmentVariables() Environment {
 	if jwtSecret == "" {
 		panic("JWT SECRET env var not set")
 	}
+	dbDir := os.Getenv("DATABASE_DIR")
+	if dbDir == "" || !dirExists(dbDir) {
+		panic("DATABASE_DIR should be a valid directory")
+	}
+	httpPort := os.Getenv("HTTP_PORT")
+	if httpPort != "" {
+		httpPort = "8080"
+	}
 	return Environment{
 		WebStaticFilesDir: staticFilesPath,
-		JWTSecret: jwtSecret,
+		JWTSecret:         jwtSecret,
+		DatabaseDir:       dbDir,
+		HttpPort:          ":" + httpPort,
 	}
+}
+
+func dirExists(path string) bool {
+	info, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+	return info.IsDir()
 }

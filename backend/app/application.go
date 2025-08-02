@@ -2,14 +2,20 @@ package app
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	domain "github.com/joaopedropio/musiquera/app/domain/entity"
 	domainrepo "github.com/joaopedropio/musiquera/app/domain/repo"
 	infra "github.com/joaopedropio/musiquera/app/infra"
+
+	"github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Application interface {
+	DBConnection() *sqlx.DB
+	Close() error
 	LoginService() infra.LoginService
 	PasswordService() infra.PasswordService
 	Repo() domainrepo.Repo
@@ -18,11 +24,12 @@ type Application interface {
 }
 
 type application struct {
+	db              *sqlx.DB
 	repo            domainrepo.Repo
 	env             Environment
 	passwordService infra.PasswordService
-	userRepo infra.UserRepo
-	loginService infra.LoginService
+	userRepo        infra.UserRepo
+	loginService    infra.LoginService
 }
 
 func (a *application) Environment() Environment {
@@ -45,13 +52,30 @@ func (a *application) LoginService() infra.LoginService {
 	return a.loginService
 }
 
+func (a *application) DBConnection() *sqlx.DB {
+	return a.db
+}
+
+func (a *application) Close() error {
+	fmt.Println("closing db connection")
+	if err := a.db.Close(); err != nil {
+		log.Fatalf("unable to close db connection: %s", err)
+	}
+	return nil
+}
+
 func NewApplication() (Application, error) {
-	repo := infra.NewRepo()
 	env := GetEnvironmentVariables()
+	db, err := sqlx.Open("sqlite3", env.DatabaseDir+"/musiquera.db")
+	if err != nil {
+		panic(fmt.Errorf("unable to start db connection: %w", err))
+	}
+	repo := infra.NewRepo()
 	passwordService := infra.NewPasswordService(env.JWTSecret)
-	userRepo := infra.NewUserRepo()
+	userRepo := infra.NewUserRepo(db)
 	loginService := infra.NewLoginService(passwordService, userRepo)
 	a := &application{
+		db,
 		repo,
 		env,
 		passwordService,
@@ -61,7 +85,19 @@ func NewApplication() (Application, error) {
 	if err := a.feed(); err != nil {
 		return nil, fmt.Errorf("unable to feed: %w", err)
 	}
+	a.schema(db)
 	return a, nil
+}
+
+func (a *application) schema(db *sqlx.DB) {
+	db.MustExec(`
+		CREATE TABLE IF NOT EXISTS users (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT,
+		username TEXT,
+		password TEXT,
+		createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+	);`)
 }
 
 func (a *application) feed() error {
