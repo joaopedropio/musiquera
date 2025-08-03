@@ -10,7 +10,7 @@ type Environment struct {
 	WebStaticFilesDir string
 	JWTSecret         string
 	DatabaseDir       string
-	HttpPort          string
+	HTTPPort          string
 }
 
 func GetEnvironmentVariables() Environment {
@@ -38,7 +38,7 @@ func GetEnvironmentVariables() Environment {
 		WebStaticFilesDir: staticFilesPath,
 		JWTSecret:         jwtSecret,
 		DatabaseDir:       dbDir,
-		HttpPort:          ":" + httpPort,
+		HTTPPort:          ":" + httpPort,
 	}
 }
 

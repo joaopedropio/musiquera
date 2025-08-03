@@ -26,7 +26,7 @@ func NewServer() (*Server, error) {
 	api.ConfigureAPI(r, a)
 	return &Server{
 		httpServer: &http.Server{
-			Addr:    a.Environment().HttpPort,
+			Addr:    a.Environment().HTTPPort,
 			Handler: r,
 		},
 		a: a,
