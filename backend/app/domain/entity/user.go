@@ -8,6 +8,7 @@ import (
 
 type User interface {
 	ID() uuid.UUID
+	Email() string
 	Username() string
 	Name() string
 	Password() string
@@ -16,15 +17,17 @@ type User interface {
 
 type user struct {
 	id uuid.UUID
+	email string
 	username string
 	name     string
 	password string
 	createdAt time.Time
 }
 
-func NewUser(id uuid.UUID, username, name, password string, createdAt time.Time) User {
+func NewUser(id uuid.UUID, email, username, name, password string, createdAt time.Time) User {
 	return &user{
 		id: id,
+		email: email,
 		username: username,
 		name:     name,
 		password: password,
@@ -34,6 +37,10 @@ func NewUser(id uuid.UUID, username, name, password string, createdAt time.Time)
 
 func (u *user) ID() uuid.UUID {
 	return u.id
+}
+
+func (u *user) Email() string {
+	return u.email
 }
 
 func (u *user) Username() string {

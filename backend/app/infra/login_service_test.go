@@ -15,6 +15,24 @@ import (
 
 type UserRepoMock struct {
 	GetUserByUsernameFunc func(username string) (domain.User, error)
+	AddUserFunc           func(user domain.User) error
+	CreateInviteFunc      func() (uuid.UUID, error)
+	SaveInviteFunc func(invite domain.Invite) error
+	GetInviteByIDFunc func(id uuid.UUID) (domain.Invite, error)
+}
+
+func (r *UserRepoMock) GetInviteByID (id uuid.UUID) (domain.Invite, error) {
+	if r.GetInviteByIDFunc == nil {
+		panic("GetInviteByIDFunc not implemented")
+	}
+	return r.GetInviteByIDFunc(id)
+}
+
+func (r *UserRepoMock) SaveInvite(invite domain.Invite) error {
+	if r.SaveInviteFunc == nil {
+		panic("SaveInvite not implemented")
+	}
+	return r.SaveInviteFunc(invite)
 }
 
 func (r *UserRepoMock) GetUserByUsername(username string) (domain.User, error) {
@@ -24,9 +42,24 @@ func (r *UserRepoMock) GetUserByUsername(username string) (domain.User, error) {
 	return r.GetUserByUsernameFunc(username)
 }
 
+func (r *UserRepoMock) AddUser(user domain.User) error {
+	if r.AddUserFunc == nil {
+		panic("AddUser not implemented")
+	}
+	return r.AddUserFunc(user)
+}
+
+func (r *UserRepoMock) CreateInvite() (uuid.UUID, error) {
+	if r.CreateInviteFunc == nil {
+		panic("CreateInvite not implemented")
+	}
+	return r.CreateInviteFunc()
+}
+
 func TestLoginService_ShouldNotLogin_WhenUserExistsButPasswordDoesNotMatch(t *testing.T) {
 	username := "username"
 	password := "12345"
+	email := "example@mail.com"
 	wrongPasswornd := "invalid password"
 	passService := infra.NewPasswordService(rand.Text())
 	hash, err := passService.HashPassword(password)
@@ -34,7 +67,7 @@ func TestLoginService_ShouldNotLogin_WhenUserExistsButPasswordDoesNotMatch(t *te
 
 	userRepoMock := &UserRepoMock{}
 	userRepoMock.GetUserByUsernameFunc = func(username string) (domain.User, error) {
-		return domain.NewUser(uuid.New(), username, "User", hash, time.Now()), nil
+		return domain.NewUser(uuid.New(), email, username, "User", hash, time.Now()), nil
 	}
 
 	loginService := infra.NewLoginService(passService, userRepoMock)
@@ -63,13 +96,14 @@ func TestLoginService_ShouldNotLogin_WhenUserDoesNotExists(t *testing.T) {
 func TestLoginService_ShouldLogin_WhenUserExistsAndPasswordMatches(t *testing.T) {
 	username := "username"
 	password := "12345"
+	email := "example@mail.com"
 	passService := infra.NewPasswordService(rand.Text())
 	hash, err := passService.HashPassword(password)
 	assert.Nil(t, err)
 
 	userRepoMock := &UserRepoMock{}
 	userRepoMock.GetUserByUsernameFunc = func(username string) (domain.User, error) {
-		return domain.NewUser(uuid.New(), username, "User", hash, time.Now()), nil
+		return domain.NewUser(uuid.New(), email, username, "User", hash, time.Now()), nil
 	}
 
 	loginService := infra.NewLoginService(passService, userRepoMock)
@@ -80,13 +114,14 @@ func TestLoginService_ShouldLogin_WhenUserExistsAndPasswordMatches(t *testing.T)
 func TestLoginService_ShouldBeLogged_WhenTokenIsValidAndContainsUsername(t *testing.T) {
 	username := "username"
 	password := "12345"
+	email := "example@mail.com"
 	passService := infra.NewPasswordService(rand.Text())
 	hash, err := passService.HashPassword(password)
 	assert.Nil(t, err)
 
 	userRepoMock := &UserRepoMock{}
 	userRepoMock.GetUserByUsernameFunc = func(username string) (domain.User, error) {
-		return domain.NewUser(uuid.New(), username, "User", hash, time.Now()), nil
+		return domain.NewUser(uuid.New(), email, username, "User", hash, time.Now()), nil
 	}
 
 	loginService := infra.NewLoginService(passService, userRepoMock)
@@ -116,7 +151,7 @@ func TestLoginService_ShouldNotBeLogged_WhenTokenIsEmpty(t *testing.T) {
 	passService := infra.NewPasswordService(jwtSecret)
 	loginService := infra.NewLoginService(passService, nil)
 	isLogged, err := loginService.IsLogged(token)
-	
+
 	assert.NotNil(t, err)
 	assert.False(t, isLogged)
 	assert.Equal(t, "unable to decode jwt token: failed to parse jws: invalid byte sequence", err.Error())

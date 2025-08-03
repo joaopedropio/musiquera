@@ -13,15 +13,20 @@ import (
 )
 
 type UserDB struct {
-	IDField uuid.UUID `db:"id"`
-	UsernameField string `db:"username"`
-	NameField     string `db:"name"`
-	PasswordField string `db:"password"`
-	CreatedAtField time.Time `db:"createdAt"`
+	IDField        uuid.UUID `db:"id"`
+	EmailField     string    `db:"email"`
+	UsernameField  string    `db:"username"`
+	NameField      string    `db:"name"`
+	PasswordField  string    `db:"password"`
+	CreatedAtField time.Time `db:"created_at"`
 }
 
 func (u *UserDB) ID() uuid.UUID {
 	return u.IDField
+}
+
+func (u *UserDB) Email() string {
+	return u.EmailField
 }
 
 func (u *UserDB) Username() string {
@@ -40,8 +45,66 @@ func (u *UserDB) CreatedAt() time.Time {
 	return u.CreatedAtField
 }
 
+type InviteDB struct {
+	IDField        uuid.UUID           `db:"id"`
+	UserIDField    uuid.UUID              `db:"user_id"`
+	StatusField    entity.InviteStatus `db:"status"`
+	CreatedAtField time.Time           `db:"created_at"`
+}
+
+func (i *InviteDB) ID() uuid.UUID {
+	return i.IDField
+}
+
+func (i *InviteDB) UserID() uuid.UUID {
+	return i.UserIDField
+}
+
+func (i *InviteDB) Status() entity.InviteStatus {
+	return i.StatusField
+}
+
+func (i *InviteDB) CreatedAt() time.Time {
+	return i.CreatedAtField
+}
+
+func CreateInviteDB(invite entity.Invite) *InviteDB {
+	return &InviteDB{
+		IDField: invite.ID(),
+		UserIDField: invite.UserID(),
+		StatusField: invite.Status(),
+		CreatedAtField: invite.CreatedAt(),
+	}
+}
+
+func CreateInviteFromInviteDB(inviteDB *InviteDB) entity.Invite {
+
+	return entity.NewInvite(
+
+inviteDB.IDField,
+	inviteDB.UserIDField,
+		inviteDB.StatusField,
+		inviteDB.CreatedAtField)
+
+}
+
 type UserRepo interface {
 	GetUserByUsername(username string) (entity.User, error)
+	AddUser(user entity.User) error
+	CreateInvite() (uuid.UUID, error)
+	SaveInvite(invite entity.Invite) error
+	GetInviteByID(id uuid.UUID) (entity.Invite, error)
+}
+
+func CreateUserDB(user entity.User) *UserDB {
+	return &UserDB{
+		IDField:        user.ID(),
+		EmailField:     user.Email(),
+		UsernameField:  user.Username(),
+		NameField:      user.Name(),
+		PasswordField:  user.Password(),
+		CreatedAtField: user.CreatedAt(),
+	}
 }
 
 type userRepo struct {
@@ -52,6 +115,19 @@ func NewUserRepo(db *sqlx.DB) UserRepo {
 	return &userRepo{
 		db: db,
 	}
+}
+
+func (r *userRepo) AddUser(user entity.User) error {
+	query := `
+	INSERT INTO users (id, name, email, username, password, created_at)
+	VALUES (:id, :name, :email, :username, :password, :created_at);
+	`
+	dbUser := CreateUserDB(user)
+	_, err := r.db.NamedExec(query, dbUser)
+	if err != nil {
+		return fmt.Errorf("unable to insert user %s: %w", user.Username(), err)
+	}
+	return nil
 }
 
 func (r *userRepo) GetUserByUsername(username string) (entity.User, error) {
@@ -67,8 +143,49 @@ func (r *userRepo) GetUserByUsername(username string) (entity.User, error) {
 		return nil, fmt.Errorf("user %s not found", username)
 	}
 	return users[0], nil
+}
 
-	//savedPassword := os.Getenv("SAVED_PASSWORD")
-	//user := entity.NewUser(uuid.New(), "pio", "Joao Pedro", savedPassword, time.Now())
-	//return user, nil
+func (r *userRepo) GetInviteByID(id uuid.UUID) (entity.Invite, error) {
+	query := `
+	SELECT id, user_id, status, created_at FROM invites
+	WHERE id = ?;
+	`
+	var dbInvite InviteDB
+	err := r.db.Get(&dbInvite, query, id)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get invite from db: %w", err)
+	}
+	return CreateInviteFromInviteDB(&dbInvite), nil
+}
+
+func (r *userRepo) CreateInvite() (uuid.UUID, error) {
+	query := `
+	INSERT INTO invites (id, status, created_at)
+	VALUES (:id, :status, :created_at)
+	`
+	invite := &InviteDB{
+		IDField:        uuid.New(),
+		StatusField:    entity.InviteStatusPending,
+		CreatedAtField: time.Now(),
+	}
+	_, err := r.db.NamedExec(query, invite)
+	if err != nil {
+		return uuid.UUID{}, fmt.Errorf("unable to insert new invite: %w", err)
+	}
+
+	return invite.IDField, nil
+}
+
+func (r *userRepo) SaveInvite(invite entity.Invite) error {
+	query := `
+	UPDATE invites SET status = :status, user_id = :user_id
+	WHERE id = :id;
+	`
+
+	dbInvite := CreateInviteDB(invite)
+	_, err := r.db.NamedExec(query, dbInvite)
+	if err != nil {
+		return fmt.Errorf("unable to save invite: %w", err)
+	}
+	return err
 }

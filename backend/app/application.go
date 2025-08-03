@@ -8,6 +8,7 @@ import (
 	domain "github.com/joaopedropio/musiquera/app/domain/entity"
 	domainrepo "github.com/joaopedropio/musiquera/app/domain/repo"
 	infra "github.com/joaopedropio/musiquera/app/infra"
+	"github.com/joaopedropio/musiquera/app/utils"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
@@ -66,7 +67,7 @@ func (a *application) Close() error {
 
 func NewApplication() (Application, error) {
 	env := GetEnvironmentVariables()
-	db, err := sqlx.Open("sqlite3", env.DatabaseDir+"/musiquera.db")
+	db, err := sqlx.Open("sqlite3", env.DatabaseDir+"/musiquera.db?_foreign_keys=on")
 	if err != nil {
 		panic(fmt.Errorf("unable to start db connection: %w", err))
 	}
@@ -90,14 +91,7 @@ func NewApplication() (Application, error) {
 }
 
 func (a *application) schema(db *sqlx.DB) {
-	db.MustExec(`
-		CREATE TABLE IF NOT EXISTS users (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT,
-		username TEXT,
-		password TEXT,
-		createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
-	);`)
+	db.MustExec(utils.DatabaseSchema())
 }
 
 func (a *application) feed() error {
