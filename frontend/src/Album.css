@@ -11,7 +11,3 @@
 	 color: var(--brand);
  }
 
-.no-dots {
-    list-style-type: none;
-    padding-left: 0; /* optional, removes indentation */
-}

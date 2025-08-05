@@ -8,8 +8,8 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	entity "github.com/joaopedropio/musiquera/app/domain/entity"
-
-	_ "github.com/mattn/go-sqlite3"
+	// _ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 )
 
 type UserDB struct {
@@ -47,7 +47,7 @@ func (u *UserDB) CreatedAt() time.Time {
 
 type InviteDB struct {
 	IDField        uuid.UUID           `db:"id"`
-	UserIDField    uuid.UUID              `db:"user_id"`
+	UserIDField    uuid.UUID           `db:"user_id"`
 	StatusField    entity.InviteStatus `db:"status"`
 	CreatedAtField time.Time           `db:"created_at"`
 }
@@ -70,9 +70,9 @@ func (i *InviteDB) CreatedAt() time.Time {
 
 func CreateInviteDB(invite entity.Invite) *InviteDB {
 	return &InviteDB{
-		IDField: invite.ID(),
-		UserIDField: invite.UserID(),
-		StatusField: invite.Status(),
+		IDField:        invite.ID(),
+		UserIDField:    invite.UserID(),
+		StatusField:    invite.Status(),
 		CreatedAtField: invite.CreatedAt(),
 	}
 }
@@ -81,8 +81,8 @@ func CreateInviteFromInviteDB(inviteDB *InviteDB) entity.Invite {
 
 	return entity.NewInvite(
 
-inviteDB.IDField,
-	inviteDB.UserIDField,
+		inviteDB.IDField,
+		inviteDB.UserIDField,
 		inviteDB.StatusField,
 		inviteDB.CreatedAtField)
 

@@ -1,12 +1,17 @@
 package utils
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
+
+	domain "github.com/joaopedropio/musiquera/app/domain/entity"
+	_ "modernc.org/sqlite"
 )
 
 func DatabaseSchema() string {
@@ -59,6 +64,7 @@ func DatabaseSchema() string {
 
 	CREATE TABLE IF NOT EXISTS segments (
 		track_id TEXT NOT NULL CHECK (length(track_id) = 36),
+		name TEXT NOT NULL,
 		position INT NOT NULL,
 		FOREIGN KEY (track_id) REFERENCES tracks(id)
 	)
@@ -67,7 +73,7 @@ func DatabaseSchema() string {
 
 func MustCreateTestSqliteDatabase() (string, *sqlx.DB) {
 	dbName := uuid.New().String() + ".db"
-	db, err := sqlx.Open("sqlite3", dbName+"?_foreign_keys=on")
+	db, err := sqlx.Open("sqlite", dbName+"?_foreign_keys=on")
 	if err != nil {
 		panic(fmt.Errorf("unable to create sqlite db test connection: name %s, %w", dbName, err))
 	}
@@ -86,4 +92,56 @@ func MustDestroySqliteDatabase(dbName string, db *sqlx.DB) {
 	if err := os.Remove(dbName); err != nil {
 		log.Fatalf("unable to remove database %s: %v", dbName, err)
 	}
+}
+
+func CommitOrRollback(tx *sqlx.Tx, errPtr *error) {
+	if *errPtr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			*errPtr = fmt.Errorf("rollback failed: %v (original error: %w)", rollbackErr, *errPtr)
+		}
+		return
+	}
+	if commitErr := tx.Commit(); commitErr != nil {
+		*errPtr = fmt.Errorf("commit failed: %w", commitErr)
+	}
+}
+
+func NewDateDB(d domain.Date) *DateDB {
+	return &DateDB{
+		value: d,
+	}
+}
+
+type DateDB struct {
+	value domain.Date
+}
+
+func (d *DateDB) Scan(value interface{}) error {
+	switch v := value.(type) {
+	case time.Time:
+		d.value = domain.NewDate(v.Year(), int(v.Month()), v.Day())
+		return nil
+	case string:
+		t, err := time.Parse("2006-01-02", v)
+		if err != nil {
+			return fmt.Errorf("unable to parse date string: %w", err)
+		}
+		d.value = domain.NewDate(t.Year(), int(t.Month()), t.Day())
+		return nil
+	default:
+		return fmt.Errorf("unsupported Scan type for Date: %T", value)
+	}
+}
+
+func (d DateDB) Value() (driver.Value, error) {
+	return d.value.String(), nil
+}
+
+func (d DateDB) String() string {
+	return d.value.String()
+}
+
+func (d DateDB) Date() domain.Date {
+	return d.value
 }

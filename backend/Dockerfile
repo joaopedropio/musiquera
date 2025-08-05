@@ -12,12 +12,8 @@ RUN GOOS=linux GOARCH=arm64 go build -o /app/server .
 FROM --platform=linux/arm64 alpine:latest
 
 WORKDIR /app
-
 COPY --from=builder /app/server ./server
-
 COPY ./frontend/dist /static
-
 EXPOSE 8080
 
 ENTRYPOINT ["./server"]
-

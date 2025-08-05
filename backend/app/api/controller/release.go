@@ -53,7 +53,7 @@ func (c *ReleaseController) GetReleasesByArtist(w http.ResponseWriter, r *http.R
 	}
 	fullReleases, err := c.application.Repo().GetReleasesByArtist(artistName)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("unable to get most recent release: %s", err.Error()), 500)
+		http.Error(w, fmt.Sprintf("unable to get releases by artist: %s", err.Error()), 500)
 	}
 	var releaseResponses []ReleaseResponse
 	for _, release := range fullReleases {

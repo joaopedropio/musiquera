@@ -21,13 +21,13 @@ type fullRelease struct {
 	createdAt time.Time
 }
 
-func NewFullRelease(id uuid.UUID, name string, releaseType ReleaseType, cover string, release Date, artist Artist, tracks []Track, createdAt time.Time) FullRelease {
+func NewFullRelease(id uuid.UUID, name string, releaseType ReleaseType, cover string, releaseDate Date, artist Artist, tracks []Track, createdAt time.Time) FullRelease {
 	return &fullRelease{
 		id:        id,
 		name:      name,
 		cover:     cover,
 		releaseType: releaseType,
-		release:   release,
+		release:   releaseDate,
 		artist:    artist,
 		tracks:     tracks,
 		createdAt: createdAt,

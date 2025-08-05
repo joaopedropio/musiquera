@@ -2,26 +2,39 @@ package infra_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
 	domain "github.com/joaopedropio/musiquera/app/domain/entity"
 	"github.com/joaopedropio/musiquera/app/infra"
+	"github.com/joaopedropio/musiquera/app/utils"
 )
 
-func TestRepo_ShouldAddRelease_WhenReleaseIsAdded(t *testing.T) {
-	// Arrange
-	repo := infra.NewRepo()
-	name := "release_name"
-	artist := domain.NewArtist("artist_name", "profile_photo.png")
-	release := domain.NewDate(2000, 1, 1)
-	tracks := []domain.Track{}
+func TestRepo_AddArtist(t *testing.T) {
+	dbName, db := utils.MustCreateTestSqliteDatabase()
+	defer utils.MustDestroySqliteDatabase(dbName, db)
 
-	// Act
-	id, err := repo.AddRelease(name, domain.ReleaseTypeAlbum,"", release, artist, tracks)
+	repo := infra.NewRepo(db)
+	id := uuid.New()
+	name := "Artist Name"
+	cover := "/some/path"
+	createdAt := time.Now()
+	artist := domain.NewArtist(id, name, cover, createdAt)
+	err := repo.AddArtist(artist)
 
-	// Assert
-	assert.NoError(t, err)
-	assert.NoError(t, uuid.Validate(id.String()))
+	assert.Nil(t, err)
+
+	artists, err := repo.GetArtists()
+	assert.Nil(t, err)
+
+	a, ok := utils.Find(artists, func(a domain.Artist) bool {
+		return a.Name() == name
+	})
+	assert.True(t, ok)
+	assert.Equal(t, id, a.ID())
+	assert.Equal(t, name, a.Name())
+	assert.Equal(t, cover, a.ProfileCoverPhotoPath())
+	assert.True(t, utils.IsTimeEqual(createdAt, a.CreatedAt()))
 }

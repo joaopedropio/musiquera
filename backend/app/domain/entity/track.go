@@ -2,26 +2,35 @@ package domain
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Segment interface {
+	TrackID() uuid.UUID
 	Name() string
 	Position() int64
 }
 
-func NewSegment(name string, position int64) Segment {
+func NewSegment(trackID uuid.UUID, name string, position int64) Segment {
 	return &segment{
+		trackID,
 		name,
 		position,
 	}
 }
 
 type segment struct {
-	name string
+	trackID  uuid.UUID
+	name     string
 	position int64
 }
 
-func (s *segment) Name () string {
+func (s *segment) TrackID() uuid.UUID {
+	return s.trackID
+}
+
+func (s *segment) Name() string {
 	return s.name
 }
 
@@ -30,19 +39,27 @@ func (s *segment) Position() int64 {
 }
 
 type Track interface {
+	ID() uuid.UUID
 	Name() string
 	Lyrics() string
 	File() string
 	Duration() time.Duration
 	Segments() []Segment
+	CreatedAt() time.Time
 }
 
 type track struct {
-	name     string
-	lyrics   string
-	file     string
-	duration time.Duration
-	segments []Segment
+	id        uuid.UUID
+	name      string
+	lyrics    string
+	file      string
+	duration  time.Duration
+	segments  []Segment
+	createdAt time.Time
+}
+
+func (s *track) ID() uuid.UUID {
+	return s.id
 }
 
 func (s *track) Name() string {
@@ -65,12 +82,18 @@ func (s *track) Segments() []Segment {
 	return s.segments
 }
 
-func NewTrack(name, lyrics, file string, duration time.Duration, segments []Segment) Track {
+func (s *track) CreatedAt() time.Time {
+	return s.createdAt
+}
+
+func NewTrack(id uuid.UUID, name, lyrics, file string, duration time.Duration, segments []Segment, createdAt time.Time) Track {
 	return &track{
+		id,
 		name,
 		lyrics,
 		file,
 		duration,
 		segments,
+		createdAt,
 	}
 }
