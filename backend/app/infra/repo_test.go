@@ -7,14 +7,15 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/joaopedropio/musiquera/app/database"
 	domain "github.com/joaopedropio/musiquera/app/domain/entity"
 	"github.com/joaopedropio/musiquera/app/infra"
 	"github.com/joaopedropio/musiquera/app/utils"
 )
 
 func TestRepo_AddArtist(t *testing.T) {
-	dbName, db := utils.MustCreateTestSqliteDatabase()
-	defer utils.MustDestroySqliteDatabase(dbName, db)
+	dbName, db := database.MustCreateTestSqliteDatabase()
+	defer database.MustDestroySqliteDatabase(dbName, db)
 
 	repo := infra.NewRepo(db)
 	id := uuid.New()

@@ -7,9 +7,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 
-	entity "github.com/joaopedropio/musiquera/app/domain/entity"
-	// _ "github.com/mattn/go-sqlite3"
 	_ "modernc.org/sqlite"
+
+	"github.com/joaopedropio/musiquera/app/database"
+	entity "github.com/joaopedropio/musiquera/app/domain/entity"
 )
 
 type UserDB struct {
@@ -47,8 +48,9 @@ func (u *UserDB) CreatedAt() time.Time {
 
 type InviteDB struct {
 	IDField        uuid.UUID           `db:"id"`
-	UserIDField    uuid.UUID           `db:"user_id"`
+	UserIDField    database.NullUUID           `db:"user_id"`
 	StatusField    entity.InviteStatus `db:"status"`
+	ConfirmationCodeField string `db:"code"`
 	CreatedAtField time.Time           `db:"created_at"`
 }
 
@@ -56,12 +58,16 @@ func (i *InviteDB) ID() uuid.UUID {
 	return i.IDField
 }
 
-func (i *InviteDB) UserID() uuid.UUID {
-	return i.UserIDField
+func (i *InviteDB) UserID() *uuid.UUID {
+	return i.UserIDField.Ptr()
 }
 
 func (i *InviteDB) Status() entity.InviteStatus {
 	return i.StatusField
+}
+
+func (i *InviteDB) ConfirmationCode() string {
+	return i.ConfirmationCodeField
 }
 
 func (i *InviteDB) CreatedAt() time.Time {
@@ -71,19 +77,19 @@ func (i *InviteDB) CreatedAt() time.Time {
 func CreateInviteDB(invite entity.Invite) *InviteDB {
 	return &InviteDB{
 		IDField:        invite.ID(),
-		UserIDField:    invite.UserID(),
+		UserIDField:    database.NewNullUUID(invite.UserID()),
 		StatusField:    invite.Status(),
+		ConfirmationCodeField: invite.ConfirmationCode(),
 		CreatedAtField: invite.CreatedAt(),
 	}
 }
 
 func CreateInviteFromInviteDB(inviteDB *InviteDB) entity.Invite {
-
 	return entity.NewInvite(
-
 		inviteDB.IDField,
-		inviteDB.UserIDField,
+		inviteDB.UserIDField.Ptr(),
 		inviteDB.StatusField,
+		inviteDB.ConfirmationCodeField,
 		inviteDB.CreatedAtField)
 
 }
@@ -91,7 +97,6 @@ func CreateInviteFromInviteDB(inviteDB *InviteDB) entity.Invite {
 type UserRepo interface {
 	GetUserByUsername(username string) (entity.User, error)
 	AddUser(user entity.User) error
-	CreateInvite() (uuid.UUID, error)
 	SaveInvite(invite entity.Invite) error
 	GetInviteByID(id uuid.UUID) (entity.Invite, error)
 }
@@ -147,7 +152,7 @@ func (r *userRepo) GetUserByUsername(username string) (entity.User, error) {
 
 func (r *userRepo) GetInviteByID(id uuid.UUID) (entity.Invite, error) {
 	query := `
-	SELECT id, user_id, status, created_at FROM invites
+	SELECT id, user_id, code, status, created_at FROM invites
 	WHERE id = ?;
 	`
 	var dbInvite InviteDB
@@ -158,27 +163,47 @@ func (r *userRepo) GetInviteByID(id uuid.UUID) (entity.Invite, error) {
 	return CreateInviteFromInviteDB(&dbInvite), nil
 }
 
-func (r *userRepo) CreateInvite() (uuid.UUID, error) {
-	query := `
-	INSERT INTO invites (id, status, created_at)
-	VALUES (:id, :status, :created_at)
-	`
-	invite := &InviteDB{
-		IDField:        uuid.New(),
-		StatusField:    entity.InviteStatusPending,
-		CreatedAtField: time.Now(),
-	}
-	_, err := r.db.NamedExec(query, invite)
+func (r *userRepo) SaveInvite(invite entity.Invite) error {
+	exists, err := r.inviteExists(invite)
 	if err != nil {
-		return uuid.UUID{}, fmt.Errorf("unable to insert new invite: %w", err)
+		return fmt.Errorf("unable to check if invite exists: %w", err)
+	}
+	if exists {
+		return r.updateInvite(invite)
 	}
 
-	return invite.IDField, nil
+	return r.createInvite(invite)
 }
 
-func (r *userRepo) SaveInvite(invite entity.Invite) error {
+func (r *userRepo) inviteExists(invite entity.Invite) (bool, error) {
 	query := `
-	UPDATE invites SET status = :status, user_id = :user_id
+	SELECT EXISTS(SELECT 1 from invites WHERE id = ? LIMIT 1);
+	`
+	var exists bool
+	err := r.db.Get(&exists, query, invite.ID().String())
+	if err != nil {
+		return false, fmt.Errorf("unable to check if invite exists: %w", err)
+	}
+	return exists, nil
+}
+
+func (r *userRepo) createInvite(invite entity.Invite) error {
+	query := `
+	INSERT INTO invites (id, user_id, code, status, created_at)
+	VALUES (:id, :user_id, :code, :status, :created_at)
+	`
+	inviteDB := CreateInviteDB(invite)
+	_, err := r.db.NamedExec(query, inviteDB)
+	if err != nil {
+		return fmt.Errorf("unable to insert new invite: %w", err)
+	}
+
+	return nil
+}
+
+func (r *userRepo) updateInvite(invite entity.Invite) error {
+	query := `
+	UPDATE invites SET status = :status, user_id = :user_id, code = :code
 	WHERE id = :id;
 	`
 

@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/joaopedropio/musiquera/app/database"
 	domainrepo "github.com/joaopedropio/musiquera/app/domain/repo"
 	infra "github.com/joaopedropio/musiquera/app/infra"
-	"github.com/joaopedropio/musiquera/app/utils"
 
 	"github.com/jmoiron/sqlx"
-	//_ "github.com/mattn/go-sqlite3"
 	_ "modernc.org/sqlite"
-
 )
 
 type Application interface {
@@ -85,15 +83,15 @@ func NewApplication() (Application, error) {
 	}
 	a.schema(db)
 	/*
-	if err := a.feed(); err != nil {
-		return nil, fmt.Errorf("unable to feed: %w", err)
-	}
+		if err := a.feed(); err != nil {
+			return nil, fmt.Errorf("unable to feed: %w", err)
+		}
 	*/
 	return a, nil
 }
 
 func (a *application) schema(db *sqlx.DB) {
-	db.MustExec(utils.DatabaseSchema())
+	db.MustExec(database.DatabaseSchema())
 }
 
 /*
@@ -134,7 +132,7 @@ func (a *application) feed() error {
 	if err != nil {
 		return fmt.Errorf("unable to add artist: %w", err)
 	}
-	
+
 	liquidLabVol12TrackID := uuid.New()
 	liquidLabVol12 := []domain.Track{
 		domain.NewTrack(liquidLabVol12TrackID, "Live set", "", "/media/kream/liquid_lab_vol_12/KREAM_Presents___LIQUID___LAB_Vol__12__Adriatique__Prospa__WhoMadeWho__at_Vemork__LUeHFSkbLlo_/manifest.mpd", time.Minute*5, []domain.Segment{

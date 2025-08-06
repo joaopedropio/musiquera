@@ -9,9 +9,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 
+	"github.com/joaopedropio/musiquera/app/database"
 	"github.com/joaopedropio/musiquera/app/domain/entity"
 	domainrepo "github.com/joaopedropio/musiquera/app/domain/repo"
-	"github.com/joaopedropio/musiquera/app/utils"
 )
 
 func NewRepo(db *sqlx.DB) domainrepo.Repo {
@@ -21,7 +21,7 @@ func NewRepo(db *sqlx.DB) domainrepo.Repo {
 }
 
 type repo struct {
-	db       *sqlx.DB
+	db *sqlx.DB
 }
 
 func CreateFullRelease(fullReleaseDB FullReleaseDB) domain.FullRelease {
@@ -73,7 +73,7 @@ func CreateFullReleaseDB(fullRelease domain.FullRelease) *FullReleaseDB {
 		fullRelease.Name(),
 		fullRelease.Type(),
 		fullRelease.Cover(),
-		utils.NewDateDB(fullRelease.ReleaseDate()),
+		database.NewDateDB(fullRelease.ReleaseDate()),
 		fullRelease.Artist().ID(),
 		CreateArtistDB(fullRelease.Artist()),
 		tracksDB,
@@ -82,34 +82,33 @@ func CreateFullReleaseDB(fullRelease domain.FullRelease) *FullReleaseDB {
 }
 
 type SegmentDB struct {
-	TrackIDField uuid.UUID `db:"track_id"`
-	NameField string `db:"name"`
-	PositionField int64 `db:"position"`
+	TrackIDField  uuid.UUID `db:"track_id"`
+	NameField     string    `db:"name"`
+	PositionField int64     `db:"position"`
 }
 
 type TrackDB struct {
-	IDField uuid.UUID `db:"id"`
-	ReleaseIDField uuid.UUID `db:"release_id"`
-	NameField string `db:"name"`
-	LyricsField string `db:"lyrics"`
-	FileField string `db:"file"`
-	DurationField time.Duration `db:"duration"`
-	SegmentsField []*SegmentDB
+	IDField        uuid.UUID     `db:"id"`
+	ReleaseIDField uuid.UUID     `db:"release_id"`
+	NameField      string        `db:"name"`
+	LyricsField    string        `db:"lyrics"`
+	FileField      string        `db:"file"`
+	DurationField  time.Duration `db:"duration"`
+	SegmentsField  []*SegmentDB
 	CreatedAtField time.Time `db:"created_at"`
 }
 
 type FullReleaseDB struct {
-	IDField        uuid.UUID `db:"id"`
-	NameField      string `db:"name"`
+	IDField          uuid.UUID          `db:"id"`
+	NameField        string             `db:"name"`
 	ReleaseTypeField domain.ReleaseType `db:"type"`
-	CoverField     string `db:"cover"`
-	ReleaseDateField   *utils.DateDB `db:"release_date"`
-	ArtistIDField    uuid.UUID `db:"artist_id"`
-	Artist *ArtistDB
-	TracksField    []*TrackDB 
-	CreatedAtField time.Time `db:"created_at"`
+	CoverField       string             `db:"cover"`
+	ReleaseDateField *database.DateDB      `db:"release_date"`
+	ArtistIDField    uuid.UUID          `db:"artist_id"`
+	Artist           *ArtistDB
+	TracksField      []*TrackDB
+	CreatedAtField   time.Time `db:"created_at"`
 }
-
 
 type ArtistDB struct {
 	IDField                    uuid.UUID `db:"id"`
@@ -253,7 +252,7 @@ func (r *repo) AddFullRelease(fullRelease domain.FullRelease) error {
 	if err != nil {
 		return fmt.Errorf("unable to begin transaction: %w", err)
 	}
-	defer utils.CommitOrRollback(tx, &err)
+	defer database.CommitOrRollback(tx, &err)
 
 	releaseDB := CreateFullReleaseDB(fullRelease)
 
@@ -276,7 +275,7 @@ func (r *repo) AddFullRelease(fullRelease domain.FullRelease) error {
 	`
 	for _, trackDB := range releaseDB.TracksField {
 		_, err := tx.NamedExec(trackQuery, trackDB)
-		if err!= nil {
+		if err != nil {
 			return fmt.Errorf("unable to insert track: %w", err)
 		}
 
@@ -439,4 +438,3 @@ func (r *repo) GetMostRecentRelease() (domain.FullRelease, error) {
 
 	return CreateFullRelease(release), nil
 }
-

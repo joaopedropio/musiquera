@@ -1,4 +1,4 @@
-package utils
+package database
 
 import (
 	"database/sql/driver"
@@ -28,6 +28,7 @@ func DatabaseSchema() string {
 	CREATE TABLE IF NOT EXISTS invites (
 		id TEXT PRIMARY KEY CHECK (length(id) = 36),
 		user_id TEXT,
+		code TEXT,
 		status TEXT NOT NULL,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY (user_id) REFERENCES users(id)
@@ -144,4 +145,68 @@ func (d DateDB) String() string {
 
 func (d DateDB) Date() domain.Date {
 	return d.value
+}
+
+type NullUUID struct {
+	UUID  uuid.UUID
+	Valid bool
+}
+
+func NewNullUUID(id *uuid.UUID) NullUUID {
+	if id == nil {
+		return NullUUID{
+			uuid.Nil,
+			false,
+		}
+	}
+
+	return NullUUID{
+		*id,
+		true,
+	}
+}
+
+// Scan implements the Scanner interface (for reading from DB)
+func (n *NullUUID) Scan(value interface{}) error {
+	if value == nil {
+		n.UUID, n.Valid = uuid.UUID{}, false
+		return nil
+	}
+
+	switch v := value.(type) {
+	case string:
+		id, err := uuid.Parse(v)
+		if err != nil {
+			return fmt.Errorf("invalid uuid string: %w", err)
+		}
+		n.UUID = id
+		n.Valid = true
+		return nil
+	case []byte:
+		id, err := uuid.ParseBytes(v)
+		if err != nil {
+			return fmt.Errorf("invalid uuid bytes: %w", err)
+		}
+		n.UUID = id
+		n.Valid = true
+		return nil
+	default:
+		return fmt.Errorf("cannot scan UUID from %T", value)
+	}
+}
+
+// Value implements the driver.Valuer interface (for writing to DB)
+func (n NullUUID) Value() (driver.Value, error) {
+	if !n.Valid {
+		return nil, nil
+	}
+	return n.UUID.String(), nil
+}
+
+// Ptr returns a *uuid.UUID or nil
+func (n NullUUID) Ptr() *uuid.UUID {
+	if !n.Valid {
+		return nil
+	}
+	return &n.UUID
 }

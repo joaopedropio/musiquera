@@ -1,12 +1,14 @@
 package infra_test
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/joaopedropio/musiquera/app/database"
 	domain "github.com/joaopedropio/musiquera/app/domain/entity"
 	"github.com/joaopedropio/musiquera/app/infra"
 	"github.com/joaopedropio/musiquera/app/utils"
@@ -14,8 +16,8 @@ import (
 
 func TestUserRepo_SaveUser(t *testing.T) {
 	// Arrange
-	dbName, db := utils.MustCreateTestSqliteDatabase()
-	defer utils.MustDestroySqliteDatabase(dbName, db)
+	dbName, db := database.MustCreateTestSqliteDatabase()
+	defer database.MustDestroySqliteDatabase(dbName, db)
 
 	repo := infra.NewUserRepo(db)
 	id := uuid.New()
@@ -43,19 +45,20 @@ func TestUserRepo_SaveUser(t *testing.T) {
 }
 
 func TestUserRepo_SaveInvite(t *testing.T) {
-	dbName, db := utils.MustCreateTestSqliteDatabase()
-	defer utils.MustDestroySqliteDatabase(dbName, db)
+	dbName, db := database.MustCreateTestSqliteDatabase()
+	defer database.MustDestroySqliteDatabase(dbName, db)
 
 	repo := infra.NewUserRepo(db)
-	inviteID, err := repo.CreateInvite()
+	invite := domain.CreateInvite()
+ 	err := repo.SaveInvite(invite)
 	assert.Nil(t, err)
 
-	invite, err := repo.GetInviteByID(inviteID)
-	assert.NotNil(t, invite)
+	inviteDB, err := repo.GetInviteByID(invite.ID())
+	assert.NotNil(t, inviteDB)
 	assert.Nil(t, err)
-	assert.Equal(t, inviteID, invite.ID())
-	assert.Equal(t, uuid.Nil, invite.UserID())
-	assert.Equal(t, domain.InviteStatusPending, invite.Status())
+	assert.Equal(t, invite.ID(), inviteDB.ID())
+	assert.Nil(t,inviteDB.UserID())
+	assert.Equal(t, domain.InviteStatusPending, inviteDB.Status())
 
 	userID := uuid.New()
 	username := "username"
@@ -68,16 +71,17 @@ func TestUserRepo_SaveInvite(t *testing.T) {
 	err = repo.AddUser(user)
 	assert.Nil(t, err)
 
-	err = invite.SetUserID(userID)
+	code, err := inviteDB.Accept(userID)
+	assert.Nil(t, err)
+	fmt.Printf("code: %s\n", code)
+
+	err = repo.SaveInvite(inviteDB)
 	assert.Nil(t, err)
 
-	err = repo.SaveInvite(invite)
+	inviteDB, err = repo.GetInviteByID(invite.ID())
 	assert.Nil(t, err)
-
-	invite, err = repo.GetInviteByID(inviteID)
-	assert.Nil(t, err)
-	assert.NotNil(t, invite)
-	assert.Equal(t, inviteID, invite.ID())
-	assert.Equal(t, userID, invite.UserID())
-	assert.Equal(t, domain.InviteStatusAccepted, invite.Status())
+	assert.NotNil(t, inviteDB)
+	assert.Equal(t, invite.ID(), inviteDB.ID())
+	assert.Equal(t, userID, *inviteDB.UserID())
+	assert.Equal(t, domain.InviteStatusAccepted, inviteDB.Status())
 }
