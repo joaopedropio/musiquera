@@ -81,7 +81,6 @@ func (c *SecurityController) Logout(w http.ResponseWriter, r *http.Request) {
 func (c *SecurityController) AuthCheck(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("jwt")
 	if err != nil {
-		fmt.Println("no token cookie found")
 		http.Error(w, "", http.StatusUnauthorized)
 		return
 	}

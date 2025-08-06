@@ -31,7 +31,7 @@ func GetEnvironmentVariables() Environment {
 		panic("DATABASE_DIR should be a valid directory")
 	}
 	httpPort := os.Getenv("HTTP_PORT")
-	if httpPort != "" {
+	if httpPort == "" {
 		httpPort = "8080"
 	}
 	return Environment{

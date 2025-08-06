@@ -1,0 +1,31 @@
+services:
+  nginx:
+    image: nginx:stable
+#     platform: linux/arm64
+    ports:
+      - "80:80"
+    restart: always
+    environment:
+      SERVER_NAME: ${NGINX_SERVER_NAME}
+#       UPSTREAM_HOST: backend
+      UPSTREAM_HOST: host.docker.internal
+      UPSTREAM_PORT: ${BACKEND_HTTP_PORT}
+    volumes:
+      - ./nginx.conf.template:/etc/nginx/templates/default.conf.template
+      - ${MEDIA_FILES}:/media/
+#     depends_on:
+#       - backend
+# 
+#   backend:
+#     image: joaopio/musiquera:arm64
+#     platform: linux/arm64
+#     ports:
+#       - "${BACKEND_HTTP_PORT}:${BACKEND_HTTP_PORT}"
+#     restart: always
+#     environment:
+#       STATIC_FILES: /static/
+#       DATABASE_DIR: /database/
+#       JWT_SECRET: ${JWT_SECRET}
+#       HTTP_PORT: ${BACKEND_HTTP_PORT}
+#     volumes:
+#       - ${BACKEND_DATABASE_DIR}:/database/

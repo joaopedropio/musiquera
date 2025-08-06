@@ -2,3 +2,4 @@
 vendor
 content-server/
 .DS_Store
+.env
