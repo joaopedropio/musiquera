@@ -2,23 +2,38 @@ package infra
 
 import (
 	"fmt"
+
+	"github.com/go-chi/jwtauth/v5"
+
+	"github.com/joaopedropio/musiquera/app/utils"
 )
 
 type LoginService interface {
-	Login (username, password string) (string, error)
+	JWTAuth() *jwtauth.JWTAuth
+	Login(username, password string) (string, error)
 	IsLogged(token string) (bool, error)
 }
 
-func NewLoginService(passwordService PasswordService, userRepo UserRepo) LoginService {
+func NewLoginService(jwtSecret string, userRepo UserRepo) LoginService {
 	return &loginService{
-		passwordService: passwordService,
+		jwtAuth:  createJwtAuth(jwtSecret),
 		userRepo: userRepo,
 	}
 }
 
 type loginService struct {
-	passwordService PasswordService
+	jwtAuth  *jwtauth.JWTAuth
 	userRepo UserRepo
+}
+
+func (s *loginService) JWTAuth() *jwtauth.JWTAuth {
+	return s.jwtAuth
+}
+
+func createJwtAuth(jwtSecret string) *jwtauth.JWTAuth {
+	algorithm := "HS256"
+	signKey := []byte(jwtSecret)
+	return jwtauth.New(algorithm, signKey, nil)
 }
 
 func (s *loginService) Login(username, password string) (string, error) {
@@ -26,7 +41,7 @@ func (s *loginService) Login(username, password string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("unable to get user by username: %w", err)
 	}
-	verified, err := s.passwordService.VerifyPassword(password, user.Password())
+	verified, err := utils.VerifyPassword(password, user.Password())
 	if err != nil {
 		return "", fmt.Errorf("unable to verify password: %w", err)
 	}
@@ -34,13 +49,13 @@ func (s *loginService) Login(username, password string) (string, error) {
 		return "", fmt.Errorf("password does not match")
 	}
 
-	_, jwt, _ := s.passwordService.JWTAuth().Encode(map[string]interface{}{"username":user.Username()})
+	_, jwt, _ := s.jwtAuth.Encode(map[string]interface{}{"username": user.Username()})
 
 	return jwt, nil
 }
 
 func (s *loginService) IsLogged(t string) (bool, error) {
-	token, err := s.passwordService.JWTAuth().Decode(t)
+	token, err := s.jwtAuth.Decode(t)
 	if err != nil {
 		return false, fmt.Errorf("unable to decode jwt token: %w", err)
 	}

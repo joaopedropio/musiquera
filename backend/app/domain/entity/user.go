@@ -1,9 +1,15 @@
 package domain
 
 import (
+	"errors"
+	"fmt"
+	"net/mail"
+	"regexp"
 	"time"
 
 	"github.com/google/uuid"
+
+	"github.com/joaopedropio/musiquera/app/utils"
 )
 
 type User interface {
@@ -22,6 +28,34 @@ type user struct {
 	name     string
 	password string
 	createdAt time.Time
+}
+
+func CreateUser(name, username, email, password string) (User, error) {
+	if !utils.IsValidPassword(password) {
+		return nil, errors.New("invalid password")
+	}
+	if !isValidUsername(username) {
+		return nil, errors.New("invalid username")
+	}
+	if email != "" {
+		_, err :=mail.ParseAddress(email)
+		if err != nil {
+			return nil, fmt.Errorf("unable to parse email '%s': %w", email, err)
+		}
+	}
+	return NewUser(
+		uuid.New(), 
+		email,
+		username,
+		name,
+		password,
+		time.Now(),
+	), nil
+}
+
+func isValidUsername(username string) bool {
+	re := regexp.MustCompile(`^[a-zA-Z0-9_-]{3,}$`)
+	return re.MatchString(username)
 }
 
 func NewUser(id uuid.UUID, email, username, name, password string, createdAt time.Time) User {

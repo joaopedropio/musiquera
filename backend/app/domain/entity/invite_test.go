@@ -10,6 +10,7 @@ import (
 	"github.com/joaopedropio/musiquera/app/database"
 	domain "github.com/joaopedropio/musiquera/app/domain/entity"
 	"github.com/joaopedropio/musiquera/app/infra"
+	"github.com/joaopedropio/musiquera/app/utils"
 )
 
 func TestInvite_WhenCreatingInvite_UserShouldBeEmptyAndStatusPending(t *testing.T) {
@@ -62,7 +63,7 @@ func TestInvite_WhenUserAcceptInvite_ShouldSetUserIDAndConfirmationCode(t *testi
 	assert.NoError(t, err)
 	assert.Len(t, code, 6)
 	assert.Equal(t, invite.ConfirmationCode(), code)
-	assert.Equal(t, user.ID().String(),  invite.UserID().String())
+	assert.Equal(t, user.ID().String(), invite.UserID().String())
 	err = repo.SaveInvite(invite)
 	assert.NoError(t, err)
 
@@ -73,7 +74,7 @@ func TestInvite_WhenUserAcceptInvite_ShouldSetUserIDAndConfirmationCode(t *testi
 }
 
 func createUser(t *testing.T, repo infra.UserRepo) domain.User {
-	hashedPassword, err := infra.NewPasswordService("").HashPassword("12345")
+	hashedPassword, err := utils.HashPassword("12345")
 	assert.NoError(t, err)
 	user := domain.NewUser(uuid.New(), "example@mail.com", "username", "User name", hashedPassword, time.Now())
 	err = repo.AddUser(user)

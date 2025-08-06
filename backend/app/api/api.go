@@ -21,7 +21,7 @@ func configureHandlers(m *chi.Mux, c Controller, a app.Application) {
 
 func privateRoutes(c Controller, a app.Application) func(r chi.Router) {
 	return func(r chi.Router) {
-		r.Use(jwtauth.Verifier(a.PasswordService().JWTAuth()))
+		r.Use(jwtauth.Verifier(a.LoginService().JWTAuth()))
 		r.Use(jwtRedirectMiddleware)
 		r.Post("/logout", c.Security.Logout)
 		r.Get("/api/artist/", c.Artist.GetAllArtists)

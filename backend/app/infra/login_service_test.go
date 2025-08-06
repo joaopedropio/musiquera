@@ -11,14 +11,23 @@ import (
 
 	"github.com/joaopedropio/musiquera/app/domain/entity"
 	"github.com/joaopedropio/musiquera/app/infra"
+	"github.com/joaopedropio/musiquera/app/utils"
 )
 
 type UserRepoMock struct {
+	GetUserByEmailFunc    func(email string) (domain.User, error)
 	GetUserByUsernameFunc func(username string) (domain.User, error)
 	AddUserFunc           func(user domain.User) error
 	CreateInviteFunc      func() (uuid.UUID, error)
 	SaveInviteFunc        func(invite domain.Invite) error
 	GetInviteByIDFunc     func(id uuid.UUID) (domain.Invite, error)
+}
+
+func (r *UserRepoMock) GetUserByEmail(email string) (domain.User, error) {
+	if r.GetUserByEmailFunc == nil {
+		panic("GetUserByEmail not implemented")
+	}
+	return r.GetUserByEmailFunc(email)
 }
 
 func (r *UserRepoMock) GetInviteByID(id uuid.UUID) (domain.Invite, error) {
@@ -57,12 +66,12 @@ func (r *UserRepoMock) CreateInvite() (uuid.UUID, error) {
 }
 
 func TestLoginService_ShouldNotLogin_WhenUserExistsButPasswordDoesNotMatch(t *testing.T) {
+	jwtSecret := rand.Text()
 	username := "username"
 	password := "12345"
 	email := "example@mail.com"
 	wrongPasswornd := "invalid password"
-	passService := infra.NewPasswordService(rand.Text())
-	hash, err := passService.HashPassword(password)
+	hash, err := utils.HashPassword(password)
 	assert.NoError(t, err)
 
 	userRepoMock := &UserRepoMock{}
@@ -70,7 +79,7 @@ func TestLoginService_ShouldNotLogin_WhenUserExistsButPasswordDoesNotMatch(t *te
 		return domain.NewUser(uuid.New(), email, username, "User", hash, time.Now()), nil
 	}
 
-	loginService := infra.NewLoginService(passService, userRepoMock)
+	loginService := infra.NewLoginService(jwtSecret, userRepoMock)
 	token, err := loginService.Login(username, wrongPasswornd)
 	assert.Empty(t, token)
 	assert.Error(t, err)
@@ -78,15 +87,15 @@ func TestLoginService_ShouldNotLogin_WhenUserExistsButPasswordDoesNotMatch(t *te
 }
 
 func TestLoginService_ShouldNotLogin_WhenUserDoesNotExists(t *testing.T) {
+	jwtSecret := rand.Text()
 	username := "username"
-	passService := infra.NewPasswordService(rand.Text())
 
 	userRepoMock := &UserRepoMock{}
 	userRepoMock.GetUserByUsernameFunc = func(username string) (domain.User, error) {
 		return nil, fmt.Errorf("user with username %s not found", username)
 	}
 
-	loginService := infra.NewLoginService(passService, userRepoMock)
+	loginService := infra.NewLoginService(jwtSecret, userRepoMock)
 	token, err := loginService.Login(username, "12345")
 	assert.Error(t, err)
 	assert.Empty(t, token)
@@ -94,11 +103,11 @@ func TestLoginService_ShouldNotLogin_WhenUserDoesNotExists(t *testing.T) {
 }
 
 func TestLoginService_ShouldLogin_WhenUserExistsAndPasswordMatches(t *testing.T) {
+	jwtSecret := rand.Text()
 	username := "username"
 	password := "12345"
 	email := "example@mail.com"
-	passService := infra.NewPasswordService(rand.Text())
-	hash, err := passService.HashPassword(password)
+	hash, err := utils.HashPassword(password)
 	assert.NoError(t, err)
 
 	userRepoMock := &UserRepoMock{}
@@ -106,17 +115,17 @@ func TestLoginService_ShouldLogin_WhenUserExistsAndPasswordMatches(t *testing.T)
 		return domain.NewUser(uuid.New(), email, username, "User", hash, time.Now()), nil
 	}
 
-	loginService := infra.NewLoginService(passService, userRepoMock)
+	loginService := infra.NewLoginService(jwtSecret, userRepoMock)
 	_, err = loginService.Login(username, password)
 	assert.NoError(t, err)
 }
 
 func TestLoginService_ShouldBeLogged_WhenTokenIsValidAndContainsUsername(t *testing.T) {
+	jwtSecret := rand.Text()
 	username := "username"
 	password := "12345"
 	email := "example@mail.com"
-	passService := infra.NewPasswordService(rand.Text())
-	hash, err := passService.HashPassword(password)
+	hash, err := utils.HashPassword(password)
 	assert.NoError(t, err)
 
 	userRepoMock := &UserRepoMock{}
@@ -124,7 +133,7 @@ func TestLoginService_ShouldBeLogged_WhenTokenIsValidAndContainsUsername(t *test
 		return domain.NewUser(uuid.New(), email, username, "User", hash, time.Now()), nil
 	}
 
-	loginService := infra.NewLoginService(passService, userRepoMock)
+	loginService := infra.NewLoginService(jwtSecret, userRepoMock)
 	tkn, err := loginService.Login(username, password)
 	assert.NoError(t, err)
 
@@ -137,8 +146,7 @@ func TestLoginService_ShouldNotBeLogged_WhenTokenIsEncodedOnADifferentSecret(t *
 	// correct secret => "a-string-secret-at-least-256-bits-long"
 	jwtSecret := "wrong secret"
 	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJuYW1lIn0.WmRTFgvHxI9HIWEu0hWFaKBoi6ssP2eUZoZHZRiR08w"
-	passService := infra.NewPasswordService(jwtSecret)
-	loginService := infra.NewLoginService(passService, nil)
+	loginService := infra.NewLoginService(jwtSecret, nil)
 	isLogged, err := loginService.IsLogged(token)
 	assert.Error(t, err)
 	assert.False(t, isLogged)
@@ -148,8 +156,7 @@ func TestLoginService_ShouldNotBeLogged_WhenTokenIsEncodedOnADifferentSecret(t *
 func TestLoginService_ShouldNotBeLogged_WhenTokenIsEmpty(t *testing.T) {
 	jwtSecret := "secret"
 	token := ""
-	passService := infra.NewPasswordService(jwtSecret)
-	loginService := infra.NewLoginService(passService, nil)
+	loginService := infra.NewLoginService(jwtSecret, nil)
 	isLogged, err := loginService.IsLogged(token)
 
 	assert.Error(t, err)
@@ -160,8 +167,7 @@ func TestLoginService_ShouldNotBeLogged_WhenTokenIsEmpty(t *testing.T) {
 func TestLoginService_ShouldNotBeLogged_WhenTokenDoesNotHaveUsernameField(t *testing.T) {
 	secret := "a-string-secret-at-least-256-bits-long"
 	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30"
-	passService := infra.NewPasswordService(secret)
-	loginService := infra.NewLoginService(passService, nil)
+	loginService := infra.NewLoginService(secret, nil)
 
 	isLogged, err := loginService.IsLogged(token)
 	assert.Error(t, err)

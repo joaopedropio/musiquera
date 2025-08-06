@@ -96,6 +96,7 @@ func CreateInviteFromInviteDB(inviteDB *InviteDB) entity.Invite {
 
 type UserRepo interface {
 	GetUserByUsername(username string) (entity.User, error)
+	GetUserByEmail(email string) (entity.User, error)
 	AddUser(user entity.User) error
 	SaveInvite(invite entity.Invite) error
 	GetInviteByID(id uuid.UUID) (entity.Invite, error)
@@ -134,6 +135,22 @@ func (r *userRepo) AddUser(user entity.User) error {
 	}
 	return nil
 }
+
+func (r *userRepo) GetUserByEmail(email string) (entity.User, error) {
+	var users []*UserDB
+	if err := r.db.Select(&users, "SELECT * FROM users WHERE email = ?", email); err != nil {
+		return nil, fmt.Errorf("unable to select user by email: %w", err)
+	}
+	if len(users) > 1 {
+		return nil, fmt.Errorf("should only have 1 user with email %s but have %d", email, len(users))
+	}
+
+	if len(users) == 0 {
+		return nil, fmt.Errorf("user with email %s not found", email)
+	}
+	return users[0], nil
+}
+
 
 func (r *userRepo) GetUserByUsername(username string) (entity.User, error) {
 	var users []*UserDB
