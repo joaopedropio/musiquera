@@ -25,10 +25,10 @@ func TestRepo_AddArtist(t *testing.T) {
 	artist := domain.NewArtist(id, name, cover, createdAt)
 	err := repo.AddArtist(artist)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	artists, err := repo.GetArtists()
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	a, ok := utils.Find(artists, func(a domain.Artist) bool {
 		return a.Name() == name

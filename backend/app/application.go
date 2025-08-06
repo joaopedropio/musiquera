@@ -20,6 +20,7 @@ type Application interface {
 	Repo() domainrepo.Repo
 	Environment() Environment
 	UserRepo() infra.UserRepo
+	InviteService() infra.InviteService
 }
 
 type application struct {
@@ -29,6 +30,7 @@ type application struct {
 	passwordService infra.PasswordService
 	userRepo        infra.UserRepo
 	loginService    infra.LoginService
+	inviteService infra.InviteService
 }
 
 func (a *application) Environment() Environment {
@@ -49,6 +51,10 @@ func (a *application) UserRepo() infra.UserRepo {
 
 func (a *application) LoginService() infra.LoginService {
 	return a.loginService
+}
+
+func (a *application) InviteService() infra.InviteService {
+	return a.inviteService
 }
 
 func (a *application) DBConnection() *sqlx.DB {
@@ -73,6 +79,7 @@ func NewApplication() (Application, error) {
 	passwordService := infra.NewPasswordService(env.JWTSecret)
 	userRepo := infra.NewUserRepo(db)
 	loginService := infra.NewLoginService(passwordService, userRepo)
+	inviteService := infra.NewInviteService(env.AppURL, userRepo)
 	a := &application{
 		db,
 		repo,
@@ -80,6 +87,7 @@ func NewApplication() (Application, error) {
 		passwordService,
 		userRepo,
 		loginService,
+		inviteService,
 	}
 	a.schema(db)
 	/*

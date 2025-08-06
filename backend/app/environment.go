@@ -11,6 +11,7 @@ type Environment struct {
 	JWTSecret         string
 	DatabaseDir       string
 	HTTPPort          string
+	AppURL            string
 }
 
 func GetEnvironmentVariables() Environment {
@@ -34,11 +35,16 @@ func GetEnvironmentVariables() Environment {
 	if httpPort == "" {
 		httpPort = "8080"
 	}
+	appURL := os.Getenv("APP_URL")
+	if appURL == "" {
+		appURL = fmt.Sprintf("http://localhost:%s", httpPort)
+	}
 	return Environment{
 		WebStaticFilesDir: staticFilesPath,
 		JWTSecret:         jwtSecret,
 		DatabaseDir:       dbDir,
 		HTTPPort:          ":" + httpPort,
+		AppURL:            appURL,
 	}
 }
 

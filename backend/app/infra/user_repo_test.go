@@ -30,9 +30,9 @@ func TestUserRepo_SaveUser(t *testing.T) {
 
 	// Act
 	err := repo.AddUser(user)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	dbUser, err := repo.GetUserByUsername(user.Username())
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	// Assert
 	assert.NotNil(t, dbUser)
@@ -51,11 +51,11 @@ func TestUserRepo_SaveInvite(t *testing.T) {
 	repo := infra.NewUserRepo(db)
 	invite := domain.CreateInvite()
  	err := repo.SaveInvite(invite)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	inviteDB, err := repo.GetInviteByID(invite.ID())
 	assert.NotNil(t, inviteDB)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, invite.ID(), inviteDB.ID())
 	assert.Nil(t,inviteDB.UserID())
 	assert.Equal(t, domain.InviteStatusPending, inviteDB.Status())
@@ -69,17 +69,17 @@ func TestUserRepo_SaveInvite(t *testing.T) {
 	user := domain.NewUser(userID, email, username, name, password, createdAt)
 
 	err = repo.AddUser(user)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	code, err := inviteDB.Accept(userID)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	fmt.Printf("code: %s\n", code)
 
 	err = repo.SaveInvite(inviteDB)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	inviteDB, err = repo.GetInviteByID(invite.ID())
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.NotNil(t, inviteDB)
 	assert.Equal(t, invite.ID(), inviteDB.ID())
 	assert.Equal(t, userID, *inviteDB.UserID())

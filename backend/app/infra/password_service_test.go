@@ -13,9 +13,9 @@ func TestPasswordService_Hash(t *testing.T) {
 	password := "12345"
 
 	service := infra.NewPasswordService(rand.Text())
-	hashed, err :=service.HashPassword(password)
-	assert.Nil(t, err)
+	hashed, err := service.HashPassword(password)
+	assert.NoError(t, err)
 	verified, err := service.VerifyPassword(password, hashed)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.True(t, verified)
 }

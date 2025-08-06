@@ -17,11 +17,11 @@ type UserRepoMock struct {
 	GetUserByUsernameFunc func(username string) (domain.User, error)
 	AddUserFunc           func(user domain.User) error
 	CreateInviteFunc      func() (uuid.UUID, error)
-	SaveInviteFunc func(invite domain.Invite) error
-	GetInviteByIDFunc func(id uuid.UUID) (domain.Invite, error)
+	SaveInviteFunc        func(invite domain.Invite) error
+	GetInviteByIDFunc     func(id uuid.UUID) (domain.Invite, error)
 }
 
-func (r *UserRepoMock) GetInviteByID (id uuid.UUID) (domain.Invite, error) {
+func (r *UserRepoMock) GetInviteByID(id uuid.UUID) (domain.Invite, error) {
 	if r.GetInviteByIDFunc == nil {
 		panic("GetInviteByIDFunc not implemented")
 	}
@@ -63,7 +63,7 @@ func TestLoginService_ShouldNotLogin_WhenUserExistsButPasswordDoesNotMatch(t *te
 	wrongPasswornd := "invalid password"
 	passService := infra.NewPasswordService(rand.Text())
 	hash, err := passService.HashPassword(password)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	userRepoMock := &UserRepoMock{}
 	userRepoMock.GetUserByUsernameFunc = func(username string) (domain.User, error) {
@@ -73,7 +73,7 @@ func TestLoginService_ShouldNotLogin_WhenUserExistsButPasswordDoesNotMatch(t *te
 	loginService := infra.NewLoginService(passService, userRepoMock)
 	token, err := loginService.Login(username, wrongPasswornd)
 	assert.Empty(t, token)
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 	assert.Equal(t, "password does not match", err.Error())
 }
 
@@ -88,7 +88,7 @@ func TestLoginService_ShouldNotLogin_WhenUserDoesNotExists(t *testing.T) {
 
 	loginService := infra.NewLoginService(passService, userRepoMock)
 	token, err := loginService.Login(username, "12345")
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 	assert.Empty(t, token)
 	assert.Equal(t, "unable to get user by username: user with username username not found", err.Error())
 }
@@ -99,7 +99,7 @@ func TestLoginService_ShouldLogin_WhenUserExistsAndPasswordMatches(t *testing.T)
 	email := "example@mail.com"
 	passService := infra.NewPasswordService(rand.Text())
 	hash, err := passService.HashPassword(password)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	userRepoMock := &UserRepoMock{}
 	userRepoMock.GetUserByUsernameFunc = func(username string) (domain.User, error) {
@@ -108,7 +108,7 @@ func TestLoginService_ShouldLogin_WhenUserExistsAndPasswordMatches(t *testing.T)
 
 	loginService := infra.NewLoginService(passService, userRepoMock)
 	_, err = loginService.Login(username, password)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 }
 
 func TestLoginService_ShouldBeLogged_WhenTokenIsValidAndContainsUsername(t *testing.T) {
@@ -117,7 +117,7 @@ func TestLoginService_ShouldBeLogged_WhenTokenIsValidAndContainsUsername(t *test
 	email := "example@mail.com"
 	passService := infra.NewPasswordService(rand.Text())
 	hash, err := passService.HashPassword(password)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	userRepoMock := &UserRepoMock{}
 	userRepoMock.GetUserByUsernameFunc = func(username string) (domain.User, error) {
@@ -126,10 +126,10 @@ func TestLoginService_ShouldBeLogged_WhenTokenIsValidAndContainsUsername(t *test
 
 	loginService := infra.NewLoginService(passService, userRepoMock)
 	tkn, err := loginService.Login(username, password)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	isLogged, err := loginService.IsLogged(tkn)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.True(t, isLogged)
 }
 
@@ -140,7 +140,7 @@ func TestLoginService_ShouldNotBeLogged_WhenTokenIsEncodedOnADifferentSecret(t *
 	passService := infra.NewPasswordService(jwtSecret)
 	loginService := infra.NewLoginService(passService, nil)
 	isLogged, err := loginService.IsLogged(token)
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 	assert.False(t, isLogged)
 	assert.Equal(t, "unable to decode jwt token: could not verify message using any of the signatures or keys", err.Error())
 }
@@ -152,7 +152,7 @@ func TestLoginService_ShouldNotBeLogged_WhenTokenIsEmpty(t *testing.T) {
 	loginService := infra.NewLoginService(passService, nil)
 	isLogged, err := loginService.IsLogged(token)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 	assert.False(t, isLogged)
 	assert.Equal(t, "unable to decode jwt token: failed to parse jws: invalid byte sequence", err.Error())
 }
@@ -164,7 +164,7 @@ func TestLoginService_ShouldNotBeLogged_WhenTokenDoesNotHaveUsernameField(t *tes
 	loginService := infra.NewLoginService(passService, nil)
 
 	isLogged, err := loginService.IsLogged(token)
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 	assert.False(t, isLogged)
 	assert.Equal(t, "jwt token (besides valid) does not have username filed", err.Error())
 }

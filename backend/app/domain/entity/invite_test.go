@@ -22,10 +22,10 @@ func TestInvite_WhenCreatingInvite_UserShouldBeEmptyAndStatusPending(t *testing.
 	assert.Equal(t, domain.InviteStatusPending, invite.Status())
 	assert.NotNil(t, invite)
 	err := repo.SaveInvite(invite)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	inviteDB, err := repo.GetInviteByID(invite.ID())
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.NotNil(t, inviteDB)
 	assert.Nil(t, inviteDB.UserID())
 	assert.Equal(t, domain.InviteStatusPending, inviteDB.Status())
@@ -39,14 +39,14 @@ func TestInvite_WhenUserConfirmInvite_WhenInviteIsConfirmed(t *testing.T) {
 	invite := domain.CreateInvite()
 	user := createUser(t, repo)
 	code, err := invite.Accept(user.ID())
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	err = invite.Confirm(code)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	err = repo.SaveInvite(invite)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	inviteDB, err := repo.GetInviteByID(invite.ID())
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, invite.ID(), inviteDB.ID())
 	assert.Equal(t, invite.UserID(), inviteDB.UserID())
 }
@@ -59,24 +59,24 @@ func TestInvite_WhenUserAcceptInvite_ShouldSetUserIDAndConfirmationCode(t *testi
 	invite := domain.CreateInvite()
 	user := createUser(t, repo)
 	code, err := invite.Accept(user.ID())
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Len(t, code, 6)
 	assert.Equal(t, invite.ConfirmationCode(), code)
 	assert.Equal(t, user.ID().String(),  invite.UserID().String())
 	err = repo.SaveInvite(invite)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	inviteDB, err := repo.GetInviteByID(invite.ID())
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, invite.ID(), inviteDB.ID())
 	assert.Equal(t, invite.UserID(), inviteDB.UserID())
 }
 
 func createUser(t *testing.T, repo infra.UserRepo) domain.User {
 	hashedPassword, err := infra.NewPasswordService("").HashPassword("12345")
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	user := domain.NewUser(uuid.New(), "example@mail.com", "username", "User name", hashedPassword, time.Now())
 	err = repo.AddUser(user)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	return user
 }

@@ -1,11 +1,10 @@
 package infra_test
 
 import (
+	"bytes"
 	"io"
 	"net/http"
 	"testing"
-	"bytes"
-
 
 	"github.com/stretchr/testify/assert"
 
@@ -31,7 +30,7 @@ func TestEmailService_ShouldContainValidBody(t *testing.T) {
 	toEmailAddress := "to@email.com"
 	fromEmailAddress := "from@email.com"
 	apiToken := "api_token"
-	clientMock := NewHTTPClientMock(func (req *http.Request) (*http.Response, error)  {
+	clientMock := NewHTTPClientMock(func(req *http.Request) (*http.Response, error) {
 		assert.Equal(t, providerURL, req.URL.String())
 		assert.Equal(t, req.Method, "POST")
 
@@ -39,24 +38,23 @@ func TestEmailService_ShouldContainValidBody(t *testing.T) {
 		assert.Equal(t, "application/json", req.Header.Get("Content-Type"))
 		assert.Equal(t, apiToken, req.Header.Get("X-Postmark-Server-Token"))
 
-
 		body, err := io.ReadAll(req.Body)
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 		assert.Equal(t, `{"From":"from@email.com","To":"to@email.com","TemplateAlias":"mfa_code","TemplateModel":{"mfa_code":"123456"}}`, string(body))
 
 		return &http.Response{
-                    StatusCode: 200,
-                    Body:       io.NopCloser(bytes.NewBufferString(`{"success":true}`)),
-                    Header:     make(http.Header),
-                }, nil
+			StatusCode: 200,
+			Body:       io.NopCloser(bytes.NewBufferString(`{"success":true}`)),
+			Header:     make(http.Header),
+		}, nil
 	})
 	emailService := infra.NewEmailService(clientMock, apiToken, fromEmailAddress)
 
 	// Act
-	err	 := emailService.SendCreateAccountMFACode(mfaCode, toEmailAddress)
+	err := emailService.SendCreateAccountMFACode(mfaCode, toEmailAddress)
 
 	// Assert
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 }
 
 func NewHTTPClientMock(handler func(req *http.Request) (*http.Response, error)) *http.Client {
