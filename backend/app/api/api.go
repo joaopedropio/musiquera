@@ -15,8 +15,17 @@ func ConfigureAPI(m *chi.Mux, a app.Application) {
 }
 
 func configureHandlers(m *chi.Mux, c Controller, a app.Application) {
+	m.Group(adminRoutes(c, a))
 	m.Group(privateRoutes(c, a))
 	m.Group(publicRoutes(c))
+}
+
+func adminRoutes(c Controller, a app.Application) func(r chi.Router) {
+	return func(r chi.Router) {
+		r.Use(jwtauth.Verifier(a.LoginService().JWTAuth()))
+		r.Use(jwtRedirectMiddleware)
+		r.Post("/admin/invite/create", c.User.CreateInvite)
+	}
 }
 
 func privateRoutes(c Controller, a app.Application) func(r chi.Router) {
@@ -35,6 +44,7 @@ func privateRoutes(c Controller, a app.Application) func(r chi.Router) {
 func publicRoutes(c Controller) func(r chi.Router) {
 	return func(r chi.Router) {
 		r.Get("/auth/check", c.Security.AuthCheck)
+		r.Get("/auth/checkAdmin", c.Security.AuthCheckAdmin)
 		r.Post("/login", c.Security.Login)
 		r.Get("/ping", c.PingPong.Get)
 		r.NotFound(c.StaticFiles.ServeStatic)

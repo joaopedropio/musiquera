@@ -11,6 +11,7 @@ type Controller struct {
 	PingPong    *controller.PingPongController
 	StaticFiles *controller.StaticController
 	Security    *controller.SecurityController
+	User        *controller.UserController
 }
 
 func SetupControllers(a app.Application) Controller {
@@ -19,11 +20,13 @@ func SetupControllers(a app.Application) Controller {
 	pingpingController := controller.NewPingPong()
 	staticFilesController := controller.NewStaticController(a.Environment().WebStaticFilesDir)
 	securityController := controller.NewSecurityController(a)
+	userController := controller.NewUserController(a)
 	return Controller{
 		Artist:      artistController,
 		Release:     releaseController,
 		PingPong:    pingpingController,
 		StaticFiles: staticFilesController,
 		Security:    securityController,
+		User:        userController,
 	}
 }

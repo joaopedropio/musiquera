@@ -8,7 +8,7 @@ import (
 	domain "github.com/joaopedropio/musiquera/app/domain/entity"
 )
 
-const InviteRouteURLFormat = "https://%s/api/invite/%s"
+const InviteRouteURLFormat = "https://%s/invite/%s"
 
 type InviteService interface {
 	GetInvite(inviteID uuid.UUID) (domain.Invite, error)

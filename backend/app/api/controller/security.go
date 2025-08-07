@@ -78,6 +78,27 @@ func (c *SecurityController) Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/loginPage", http.StatusSeeOther)
 }
 
+func (c *SecurityController) AuthCheckAdmin(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("jwt")
+	if err != nil {
+		http.Error(w, "", http.StatusUnauthorized)
+		return
+	}
+	isLoggedAdmin, err := c.a.LoginService().IsLoggedAdmin(cookie.Value)
+	if err != nil {
+		fmt.Println(fmt.Errorf("unable to check if user is logged admin: %w", err).Error())
+		http.Error(w, "", http.StatusUnauthorized)
+		return
+	}
+
+	if !isLoggedAdmin {
+		http.Error(w, "", http.StatusUnauthorized)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
 func (c *SecurityController) AuthCheck(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("jwt")
 	if err != nil {

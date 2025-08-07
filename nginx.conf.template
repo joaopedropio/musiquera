@@ -11,13 +11,35 @@ server {
                 proxy_set_header Cookie $http_cookie;
         }
 
+
+        location = /check_admin {
+                internal;
+                proxy_pass http://${UPSTREAM_HOST}:${UPSTREAM_PORT}/auth/checkAdmin;
+                proxy_pass_request_body off;
+                proxy_set_header Content-Length "";
+                proxy_set_header X-Original-URI $request_uri;
+                proxy_set_header Cookie $http_cookie;
+        }
+
+        location /admin/ {
+                auth_request /check_admin;
+                auth_request_set $auth_status $upstream_status;
+                error_page 401 = /forbidden;
+
+                proxy_pass http://${UPSTREAM_HOST}:${UPSTREAM_PORT};
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
         location /media/ {
                 auth_request /authentication;
                 auth_request_set $auth_status $upstream_status;
                 error_page 401 = /forbidden;
 
                 alias /media/;
-                autoindex off;  # Optional: shows directory listing
+                autoindex off;  # optional: shows directory listing
                         try_files $uri $uri/ =404;
         }
 

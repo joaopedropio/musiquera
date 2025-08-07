@@ -12,6 +12,7 @@ type LoginService interface {
 	JWTAuth() *jwtauth.JWTAuth
 	Login(username, password string) (string, error)
 	IsLogged(token string) (bool, error)
+	IsLoggedAdmin(t string) (bool, error)
 }
 
 func NewLoginService(jwtSecret string, userRepo UserRepo) LoginService {
@@ -52,6 +53,24 @@ func (s *loginService) Login(username, password string) (string, error) {
 	_, jwt, _ := s.jwtAuth.Encode(map[string]interface{}{"username": user.Username()})
 
 	return jwt, nil
+}
+
+func (s *loginService) IsLoggedAdmin(t string) (bool, error) {
+	token, err := s.jwtAuth.Decode(t)
+	if err != nil {
+		return false, fmt.Errorf("unable to decode jwt token: %w", err)
+	}
+
+	value, ok := token.Get("username")
+	if !ok {
+		return false, fmt.Errorf("jwt token (besides valid) does not have username filed")
+	}
+	username := value.(string)
+	if username != "joao" {
+		return false, nil
+	}
+
+	return true, nil
 }
 
 func (s *loginService) IsLogged(t string) (bool, error) {

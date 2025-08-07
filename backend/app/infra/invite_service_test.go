@@ -20,5 +20,5 @@ func TestInviteService_ShouldCreateInvite(t *testing.T) {
 	invite, inviteLink, err := service.CreateInvite()
 	assert.NoError(t, err)
 	assert.NotNil(t, invite)
-	assert.Equal(t, fmt.Sprintf("https://localhost:8080/api/invite/%s", invite.ID().String()), inviteLink)
+	assert.Equal(t, fmt.Sprintf("https://localhost:8080/invite/%s", invite.ID().String()), inviteLink)
 }

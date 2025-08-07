@@ -37,7 +37,7 @@ func GetEnvironmentVariables() Environment {
 	}
 	appURL := os.Getenv("APP_URL")
 	if appURL == "" {
-		appURL = fmt.Sprintf("http://localhost:%s", httpPort)
+		appURL = fmt.Sprintf("localhost:%s", httpPort)
 	}
 	return Environment{
 		WebStaticFilesDir: staticFilesPath,
