@@ -66,7 +66,7 @@ func (s *loginService) IsLoggedAdmin(t string) (bool, error) {
 		return false, fmt.Errorf("jwt token (besides valid) does not have username filed")
 	}
 	username := value.(string)
-	if username != "joao" {
+	if username != "admin" {
 		return false, nil
 	}
 

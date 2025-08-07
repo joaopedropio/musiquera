@@ -22,8 +22,9 @@ func configureHandlers(m *chi.Mux, c Controller, a app.Application) {
 
 func adminRoutes(c Controller, a app.Application) func(r chi.Router) {
 	return func(r chi.Router) {
+		adminMiddleware := setupAdminMiddleWare(a)
 		r.Use(jwtauth.Verifier(a.LoginService().JWTAuth()))
-		r.Use(jwtRedirectMiddleware)
+		r.Use(adminMiddleware)
 		r.Post("/admin/invite/create", c.User.CreateInvite)
 	}
 }
@@ -51,6 +52,23 @@ func publicRoutes(c Controller) func(r chi.Router) {
 	}
 }
 
+func setupAdminMiddleWare(a app.Application) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			cookie, err := r.Cookie("jwt")
+			if err != nil {
+				http.Error(w, "", http.StatusUnauthorized)
+				return
+			}
+			isLoggedAdmin, err := a.LoginService().IsLoggedAdmin(cookie.Value)
+			if err != nil || !isLoggedAdmin{
+				http.Error(w, "", http.StatusUnauthorized)
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
+}
 func jwtRedirectMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, claims, err := jwtauth.FromContext(r.Context())
