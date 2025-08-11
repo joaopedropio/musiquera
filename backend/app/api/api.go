@@ -44,6 +44,8 @@ func privateRoutes(c Controller, a app.Application) func(r chi.Router) {
 
 func publicRoutes(c Controller) func(r chi.Router) {
 	return func(r chi.Router) {
+		r.Get("/progress", c.JobManager.JobProgress)
+		r.Get("/jobs", c.JobManager.RunJobs)
 		r.Get("/auth/check", c.Security.AuthCheck)
 		r.Get("/auth/checkAdmin", c.Security.AuthCheckAdmin)
 		r.Post("/login", c.Security.Login)
