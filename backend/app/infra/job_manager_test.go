@@ -9,7 +9,6 @@ import (
 func TestJobManager(t *testing.T) {
 	t.Skip("This test should be called only locally")
 	jobManager := infra.NewJobManager()
-	importer := infra.NewImporter()
 	videoURLs := []string{
 		"https://www.youtube.com/watch?v=V5ftrI8hrcw",
 		"https://www.youtube.com/watch?v=nO3yGPfZg24",
@@ -21,8 +20,7 @@ func TestJobManager(t *testing.T) {
 		"https://www.youtube.com/watch?v=E9nrKitD05g",
 	}
 	for _, url := range videoURLs {
-		cmd := importer.CreateDownloadAudioWithProgressJob(url, "./", infra.YTPDLPMP3Format.String())
-		jobManager.AddJob(infra.NewJob(cmd))
+		jobManager.AddJob(infra.NewAddTrackJob(url))
 	}
 	jobManager.Run()
 }

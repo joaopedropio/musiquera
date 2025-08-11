@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"net/http"
 	"fmt"
 	"github.com/gorilla/websocket"
+	"net/http"
 
 	"github.com/joaopedropio/musiquera/app"
 	"github.com/joaopedropio/musiquera/app/infra"
@@ -19,9 +19,8 @@ func NewJobController(a app.Application) *JobController {
 	}
 }
 
-func (c *JobController) RunJobs (w http.ResponseWriter, r *http.Request) {
+func (c *JobController) RunJobs(w http.ResponseWriter, r *http.Request) {
 	jobManager := c.a.JobManager()
-	importer := infra.NewImporter()
 
 	videoURLs := []string{
 		"https://www.youtube.com/watch?v=V5ftrI8hrcw",
@@ -34,8 +33,7 @@ func (c *JobController) RunJobs (w http.ResponseWriter, r *http.Request) {
 		"https://www.youtube.com/watch?v=E9nrKitD05g",
 	}
 	for _, url := range videoURLs {
-		cmd := importer.CreateDownloadAudioWithProgressJob(url, "./", infra.YTPDLPMP3Format.String())
-		jobManager.AddJob(infra.NewJob(cmd))
+		jobManager.AddJob(infra.NewAddTrackJob(url))
 	}
 }
 
@@ -55,7 +53,7 @@ func (c *JobController) JobProgress(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(fmt.Errorf("unable to close websocket: %w", cerr))
 		}
 	}()
-	
+
 	c.a.JobManager().AddWebSocketClient(conn)
 
 	// Keep the connection alive
@@ -68,4 +66,3 @@ func (c *JobController) JobProgress(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
-

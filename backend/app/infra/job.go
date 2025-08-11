@@ -1,71 +1,56 @@
 package infra
 
 import (
-	"bufio"
 	"fmt"
 )
 
 type Job struct {
-	command  *Command
-	started  bool
-	finished bool
-	err      error
-	logCh    chan string
+	started     bool
+	finished    bool
+	currentTask string
+	err         error
+	logCh       chan string
+
+	videoURL string
 }
 
-func NewJob(cmd *Command) *Job {
+func NewAddTrackJob(videoURL string) *Job {
 	return &Job{
-		command:  cmd,
 		logCh:    make(chan string),
-		err:      nil,
-		finished: false,
+		videoURL: videoURL,
 	}
 }
 
 func (j *Job) RunWithProgress() {
 	j.start()
-	if err := runWithProgress(j.logCh, j.command); err != nil {
-		j.finish(fmt.Errorf("unable to run job with progress: %w", err))
+	j.currentTask = "Downloading track from YouTube"
+	download := NewDownloadTrackCommand(j.videoURL, "./", YTPDLPMP3Format.String())
+	if err := download.Execute(j.logCh); err != nil {
+		j.finish(fmt.Errorf("unable to download track: %w", err))
 		return
+	}
+
+	j.currentTask = "Formatting track to MPEG Dash"
+	format := NewFormatTrackCommand()
+	if err := format.Execute(j.logCh); err != nil {
+		j.finish(fmt.Errorf("unable to format audio: %w", err))
 	}
 	j.finish(nil)
 }
 
-func runWithProgress(logCh chan string, command *Command) error {
-	cmd := command.CMD
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return fmt.Errorf("unable to get stdout pipe: %w", err)
-	}
-
-	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("unable to start command: %w", err)
-	}
-	scanner := bufio.NewScanner(stdout)
-	for scanner.Scan() {
-		line := scanner.Text()
-		logCh <- string(command.JsonProgressOutputFunc(line))
-	}
-
-	if err := scanner.Err(); err != nil {
-		return fmt.Errorf("unable to read stdout scanner: %w", err)
-	}
-
-	if err := cmd.Wait(); err != nil {
-		return fmt.Errorf("unable to wait cmd: %w", err)
-	}
-
-	return nil
-}
-
 func (j *Job) start() {
+	j.currentTask = "Job started"
 	j.started = true
 	j.finished = false
 	j.err = nil
 }
 
 func (j *Job) finish(err error) {
-	close(j.logCh)
+	if err != nil {
+		j.currentTask = "Finished Successfully"
+	} else {
+		j.currentTask = "Finished Unsuccessfully"
+	}
 	j.finished = true
 	j.err = err
 }

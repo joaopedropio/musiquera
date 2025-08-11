@@ -12,7 +12,7 @@ import (
 
 type JobManager interface {
 	AddJob(job *Job)
-	RemoveJob(jobID uuid.UUID)
+	RemoveJob(jobID uuid.UUID) error
 	Run()
 
 	AddWebSocketClient(conn *websocket.Conn)
@@ -52,10 +52,16 @@ func (m *jobManager) AddJob(job *Job) {
 	m.jobsMutex.Unlock()
 }
 
-func (m *jobManager) RemoveJob(jobID uuid.UUID) {
+func (m *jobManager) RemoveJob(jobID uuid.UUID) error {
 	m.jobsMutex.Lock()
+	job, ok := m.jobs[jobID]
+	if !ok {
+		return fmt.Errorf("unable to remove job %s: job not found", jobID.String())
+	}
+	close(job.logCh)
 	delete(m.jobs, jobID)
 	m.jobsMutex.Unlock()
+	return nil
 }
 
 func (m *jobManager) GetJobs() map[uuid.UUID]*Job {
@@ -69,9 +75,6 @@ func (m *jobManager) Run() {
 				go m.subscribeToWebSocket(jobID, job.logCh)
 				go job.RunWithProgress()
 			}
-			if job.finished {
-				m.RemoveJob(jobID)
-			}
 		}
 		time.Sleep(1 * time.Second)
 	}
@@ -80,6 +83,9 @@ func (m *jobManager) Run() {
 func (m *jobManager) subscribeToWebSocket(jobID uuid.UUID, logCh chan string) {
 	for line := range logCh {
 		m.broadcastLog(jobID, line)
+	}
+	if err := m.RemoveJob(jobID); err != nil {
+		fmt.Println(fmt.Errorf("unable to remove job: %w", err))
 	}
 }
 
