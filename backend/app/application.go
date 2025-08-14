@@ -13,6 +13,7 @@ import (
 )
 
 type Application interface {
+	JobManager() infra.JobManager
 	DBConnection() *sqlx.DB
 	Close() error
 	LoginService() infra.LoginService
@@ -29,6 +30,7 @@ type application struct {
 	userRepo      infra.UserRepo
 	loginService  infra.LoginService
 	inviteService infra.InviteService
+	jobManager infra.JobManager
 }
 
 func (a *application) Environment() Environment {
@@ -55,6 +57,10 @@ func (a *application) DBConnection() *sqlx.DB {
 	return a.db
 }
 
+func (a *application) JobManager() infra.JobManager {
+	return a.jobManager
+}
+
 func (a *application) Close() error {
 	fmt.Println("closing db connection")
 	if err := a.db.Close(); err != nil {
@@ -73,6 +79,8 @@ func NewApplication() (Application, error) {
 	userRepo := infra.NewUserRepo(db)
 	loginService := infra.NewLoginService(env.JWTSecret, userRepo)
 	inviteService := infra.NewInviteService(env.AppURL, userRepo)
+	jobManager := infra.NewJobManager()
+	go jobManager.Run()
 	a := &application{
 		db,
 		repo,
@@ -80,6 +88,7 @@ func NewApplication() (Application, error) {
 		userRepo,
 		loginService,
 		inviteService,
+		jobManager,
 	}
 	a.schema(db)
 	return a, nil

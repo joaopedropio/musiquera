@@ -5,6 +5,7 @@ import Login from './Login.tsx'
 import './index.css'
 import App from './App.tsx'
 import RequireAuth from './RequireAuth.tsx'
+import Dashboard from './dashboard/Dashboard.tsx'
 
 async function enableMocking() {
 	if (process.env.NODE_ENV !== 'development') {
@@ -26,6 +27,7 @@ enableMocking().then(() => {
 						</RequireAuth>
 					} />
 					<Route path="/loginPage" element={<Login />} />
+					<Route path="/dashboard" element={<Dashboard />} />
 				</Routes>
 			</Router>
 		</StrictMode>,

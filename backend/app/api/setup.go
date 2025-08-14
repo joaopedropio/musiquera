@@ -12,6 +12,7 @@ type Controller struct {
 	StaticFiles *controller.StaticController
 	Security    *controller.SecurityController
 	User        *controller.UserController
+	JobManager  *controller.JobController
 }
 
 func SetupControllers(a app.Application) Controller {
@@ -21,6 +22,7 @@ func SetupControllers(a app.Application) Controller {
 	staticFilesController := controller.NewStaticController(a.Environment().WebStaticFilesDir)
 	securityController := controller.NewSecurityController(a)
 	userController := controller.NewUserController(a)
+	jobController := controller.NewJobController(a)
 	return Controller{
 		Artist:      artistController,
 		Release:     releaseController,
@@ -28,5 +30,6 @@ func SetupControllers(a app.Application) Controller {
 		StaticFiles: staticFilesController,
 		Security:    securityController,
 		User:        userController,
+		JobManager:  jobController,
 	}
 }
